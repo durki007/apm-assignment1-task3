@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pnml>
+  <net id="imdf_net_1780864262.7818475" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text>imdf_net_1780864262.7818475</text>
+    </name>
+    <page id="n0">
+      <place id="p_4">
+        <name>
+          <text>p_4</text>
+        </name>
+      </place>
+      <place id="p_7">
+        <name>
+          <text>p_7</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="p_3">
+        <name>
+          <text>p_3</text>
+        </name>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="p_5">
+        <name>
+          <text>p_5</text>
+        </name>
+      </place>
+      <place id="p_6">
+        <name>
+          <text>p_6</text>
+        </name>
+      </place>
+      <transition id="e7527b8b-907f-4668-83ee-7952bc78e68c">
+        <name>
+          <text>AssignToDeparture</text>
+        </name>
+      </transition>
+      <transition id="df3f2b30-a864-49e9-90b2-2892808c087d">
+        <name>
+          <text>ValidateAtPublicGate</text>
+        </name>
+      </transition>
+      <transition id="e3358b01-d606-4345-b58a-ac52edc851b4">
+        <name>
+          <text>Depart</text>
+        </name>
+      </transition>
+      <transition id="aade65c2-cfee-4af3-8db0-71f6c3ee3174">
+        <name>
+          <text>CreateGroupBooking</text>
+        </name>
+      </transition>
+      <transition id="55e12a82-6ca7-42ba-987c-031939a93927">
+        <name>
+          <text>IssueTravelTicket</text>
+        </name>
+      </transition>
+      <transition id="92c77040-6c95-443f-a315-83c74e051e39">
+        <name>
+          <text>BoardViaAccreditationLane</text>
+        </name>
+      </transition>
+      <transition id="3e0a7d1b-43ad-4955-bba9-3f55cdd5cf43">
+        <name>
+          <text>CompleteJourney</text>
+        </name>
+      </transition>
+      <arc id="2468646265504" source="source" target="aade65c2-cfee-4af3-8db0-71f6c3ee3174"/>
+      <arc id="2468646271456" source="p_3" target="55e12a82-6ca7-42ba-987c-031939a93927"/>
+      <arc id="2468646261280" source="p_5" target="92c77040-6c95-443f-a315-83c74e051e39"/>
+      <arc id="2468646269248" source="92c77040-6c95-443f-a315-83c74e051e39" target="p_6"/>
+      <arc id="2468646260800" source="df3f2b30-a864-49e9-90b2-2892808c087d" target="p_6"/>
+      <arc id="2468646260512" source="e3358b01-d606-4345-b58a-ac52edc851b4" target="p_7"/>
+      <arc id="2468646265648" source="55e12a82-6ca7-42ba-987c-031939a93927" target="p_4"/>
+      <arc id="2468646264688" source="aade65c2-cfee-4af3-8db0-71f6c3ee3174" target="p_3"/>
+      <arc id="2468646266224" source="p_4" target="e7527b8b-907f-4668-83ee-7952bc78e68c"/>
+      <arc id="2468646272656" source="e7527b8b-907f-4668-83ee-7952bc78e68c" target="p_5"/>
+      <arc id="2468646260656" source="p_5" target="df3f2b30-a864-49e9-90b2-2892808c087d"/>
+      <arc id="2468646260464" source="p_6" target="e3358b01-d606-4345-b58a-ac52edc851b4"/>
+      <arc id="2468646260272" source="p_7" target="3e0a7d1b-43ad-4955-bba9-3f55cdd5cf43"/>
+      <arc id="2468646260368" source="3e0a7d1b-43ad-4955-bba9-3f55cdd5cf43" target="sink"/>
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>

@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "olympic-transport-ocel"
+version = "0.1.0"
+description = "APM Assignment Part I, Q3 — object-centric event data simulation (public transport)."
+authors = ["Group <GroupID>"]
+readme = "README.md"
+packages = [{ include = "olympic_transport" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+r4pm = "*"
+pm4py = "*"
+pandas = "*"
+matplotlib = "*"
+graphviz = "*"
+ipykernel = "^7.2.0"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "*"
+ipykernel = "*"
+
+[tool.poetry.scripts]
+generate = "olympic_transport.generate_log:main"
+validate = "olympic_transport.validate:main"
+discover = "olympic_transport.flatten_discover:main"
+ocpn = "olympic_transport.discover_ocpn:main"
+dotted = "olympic_transport.dotted_chart:main"
+queries = "olympic_transport.queries:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
