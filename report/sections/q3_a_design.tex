@@ -1,0 +1,72 @@
+\subsection{(a) Named entities and process behavior}
+\label{sec:a}
+
+\paragraph{Object types.}
+
+\begin{table}[H]
+\centering\small
+\caption{Object types and their meanings.}
+\label{tab:object-types}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Object type} & \textbf{Meaning} \\
+\midrule
+\otPassenger  & An individual traveller (athlete, official, or spectator) who participates in the journey. \\
+\otTicket     & A travel ticket issued to exactly one passenger; carries the static attribute \attrFare. \\
+\otBooking    & A group reservation covering one or more passengers (a delegation or fan group). \\
+\otDeparture  & A scheduled shuttle or train run that departs with a fixed, pre-assigned batch of passengers. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Event types.}
+
+\begin{table}[H]
+\centering\small
+\caption{Event types and their meanings.}
+\label{tab:event-types}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Event type} & \textbf{Meaning} \\
+\midrule
+\etBooking   & A group reservation is opened for a set of passengers belonging to the same delegation or group. \\
+\etIssue     & A travel ticket is issued to a single passenger, binding the passenger to their fare class. \\
+\etAssign    & A departure is assigned a batch of passengers; records the complete set that will board together. \\
+\etBoard     & An accredited passenger (fare class \texttt{accredited}) boards via the dedicated accreditation lane. \\
+\etValidate  & A standard passenger (fare class \texttt{standard}) validates their ticket at the public gate. \\
+\etDepart    & The departure vehicle leaves with its assigned passenger batch; synchronizes all batch members. \\
+\etComplete  & A passenger has arrived at their destination and completed the journey. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Attribute.}
+
+\begin{table}[H]
+\centering\small
+\caption{Object attribute.}
+\label{tab:attribute}
+\begin{tabularx}{\textwidth}{@{}llllX@{}}
+\toprule
+\textbf{Object type} & \textbf{Attribute} & \textbf{Type} & \textbf{Domain} & \textbf{Semantics} \\
+\midrule
+\otTicket & \attrFare & string (static) & \texttt{accredited}, \texttt{standard}
+  & Distinguishes athlete/official tickets (fast accreditation lane) from spectator tickets (public gate). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Process behavior.}
+The process begins when a group coordinator opens a \otBooking, enrolling a set
+of \otPassenger{} objects into a shared reservation via \etBooking.
+Each passenger then receives a \otTicket{} through \etIssue, with
+\attrFare{} set statically at issuance to either \texttt{accredited} or
+\texttt{standard}.
+Before a departure, all passengers assigned to a given \otDeparture{} are
+recorded together in a single \etAssign{} event, establishing the batch that
+will travel together.
+Passengers then proceed to boarding: accredited passengers predominantly use
+\etBoard{} while standard passengers predominantly use \etValidate{}, with the
+choice driven by their \attrFare{} value.
+Finally, a single \etDepart{} event fires for the entire batch simultaneously,
+after which each passenger records their arrival individually via \etComplete.

@@ -1,0 +1,39 @@
+\subsection{(g) Custom business query}
+\label{sec:g}
+
+\textbf{Business question.}
+\emph{Which \etDepart{} events carry more than $N = 2$ standard-fare passengers?}
+
+\textbf{Motivation.}
+Standard-fare passengers validate at the public gate (\etValidate), which is a
+shared resource with limited throughput; departures with many standard-fare
+passengers risk queue build-up and missed departure windows.
+Identifying these high-load departures allows dispatchers to pre-position
+additional gate staff or open extra lanes before the affected \etDepart{} fires,
+directly supporting operational planning for the 2036 Olympic Games.
+The query combines E2O relations (linking \etDepart{} to \otPassenger) with the
+O2O \texttt{holds} relation and the \attrFare{} attribute of \otTicket, making
+it a genuinely object-centric query that cannot be answered from a flat event
+log alone.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figures/ocpq_g.png}{%
+  \includegraphics[width=\textwidth]{figures/ocpq_g.png}%
+}{%
+  \placeholder[\textwidth]{%
+    OCPQ screenshot for custom query g.\\
+    Filter \etDepart{} events by:\\
+    count of related \otPassenger{} objects\\
+    whose \otTicket{} has \attrFare{} = \texttt{standard} $> 2$,\\
+    screenshot and save as \texttt{report/figures/ocpq\_g.png}.
+  }%
+}
+\caption{Custom OCPQ query (g): \etDepart{} events carrying more than 2
+standard-fare passengers, useful for proactive gate-staff allocation.}
+\label{fig:ocpq-g}
+\end{figure}
+
+The result set lists the \etDepart{} event identifiers and the corresponding
+standard-passenger counts; the same result is reproduced by \texttt{query\_g()}
+in \texttt{queries.py} for cross-verification with the OCPQ output.

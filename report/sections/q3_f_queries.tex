@@ -1,0 +1,99 @@
+\subsection{(f) OCPQ queries}
+\label{sec:f}
+
+All three queries below were designed and verified using the Python equivalents
+in \texttt{queries.py}; the OCPQ screenshots show the same result sets executed
+in the OCPQ web tool (\url{https://ocpq.aarkue.eu/}) on \texttt{data/log.sqlite}.
+
+% ── f-i ──────────────────────────────────────────────────────────────────────
+\subsubsection{(f-i) All \otTicket{} objects with \attrFare{} = \texttt{accredited}}
+\label{sec:f-i}
+
+\textbf{Query.}
+Find all \otTicket{} objects whose static attribute \attrFare{} equals
+\texttt{accredited} (parameter $c = \texttt{"accredited"}$).
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figures/ocpq_f_i.png}{%
+  \includegraphics[width=\textwidth]{figures/ocpq_f_i.png}%
+}{%
+  \placeholder[\textwidth]{%
+    OCPQ screenshot for query f-i.\\
+    Load \texttt{data/log.sqlite} in OCPQ,\\
+    filter \otTicket{} by \attrFare{} = \texttt{accredited},\\
+    screenshot and save as \texttt{report/figures/ocpq\_f\_i.png}.
+  }%
+}
+\caption{OCPQ query f-i: \otTicket{} objects with \attrFare{} = \texttt{accredited}
+(subtask f-i, R(vi)).}
+\label{fig:ocpq-fi}
+\end{figure}
+
+The result set contains all tickets issued to athletes and officials.
+The count can be verified against \texttt{queries.py} output for \texttt{query\_fi}.
+
+% ── f-ii ─────────────────────────────────────────────────────────────────────
+\subsubsection{(f-ii) \otTicket{} objects with \attrFare{} = \texttt{accredited},
+exactly one \etBoard{} event, and no \etValidate{} event}
+\label{sec:f-ii}
+
+\textbf{Query.}
+Extend f-i: from the accredited tickets, retain only those related to
+\emph{exactly one} \etBoard{} event and \emph{zero} \etValidate{} events —
+i.e.\ the tickets that followed the intended fast-lane path without any
+crossover.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figures/ocpq_f_ii.png}{%
+  \includegraphics[width=\textwidth]{figures/ocpq_f_ii.png}%
+}{%
+  \placeholder[\textwidth]{%
+    OCPQ screenshot for query f-ii.\\
+    Extend f-i with event-count constraints:\\
+    \#\etBoard{} = 1 and \#\etValidate{} = 0,\\
+    screenshot and save as \texttt{report/figures/ocpq\_f\_ii.png}.
+  }%
+}
+\caption{OCPQ query f-ii: accredited \otTicket{} objects that used exactly the
+accreditation lane (subtask f-ii, R(vi) + R(vii)).}
+\label{fig:ocpq-fii}
+\end{figure}
+
+This result set identifies tickets where the data-driven routing (R(vii))
+operated as intended; the difference between f-i and f-ii counts equals the
+number of accredited tickets that crossed over to the public gate (approximately
+10\% by design).
+
+% ── f-iii ────────────────────────────────────────────────────────────────────
+\subsubsection{(f-iii) \otBooking{} objects with more than $k$ related
+\otPassenger{} objects}
+\label{sec:f-iii}
+
+\textbf{Query.}
+Find all \otBooking{} objects related via the \texttt{belongs\_to} O2O relation
+to more than $k = 2$ \otPassenger{} objects — i.e.\ group bookings covering at
+least 3 passengers.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figures/ocpq_f_iii.png}{%
+  \includegraphics[width=\textwidth]{figures/ocpq_f_iii.png}%
+}{%
+  \placeholder[\textwidth]{%
+    OCPQ screenshot for query f-iii.\\
+    Filter \otBooking{} objects by O2O count:\\
+    \#\otPassenger{} via \texttt{belongs\_to} $> 2$,\\
+    screenshot and save as \texttt{report/figures/ocpq\_f\_iii.png}.
+  }%
+}
+\caption{OCPQ query f-iii: \otBooking{} objects related to more than $k=2$
+passengers via \texttt{belongs\_to} (subtask f-iii, R(v)b).}
+\label{fig:ocpq-fiii}
+\end{figure}
+
+These bookings represent larger delegations or fan groups; the result set is
+non-empty because groups are sized between 2 and 5 passengers (with approximately
+half exceeding the $k=2$ threshold), confirming the many-to-one structure of
+R(v)b.

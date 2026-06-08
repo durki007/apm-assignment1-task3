@@ -1,0 +1,62 @@
+\subsection{(b) Type-level E2O and O2O relations}
+\label{sec:b}
+
+The tables below are derived directly from the model definition in
+\texttt{config.py} via \texttt{render\_tables.py}, ensuring consistency with
+the generated log.
+
+\paragraph{Event-to-object (E2O) relations.}
+
+\begin{table}[H]
+\centering\small
+\caption{E2O type-level relations. Each row lists the object types touched by
+the event type and the semantic role of that relationship.
+Satisfies R(iv): every event type touches at least one object type and every
+object type is touched by at least one event type.}
+\label{tab:e2o}
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Event type} & \textbf{Object type} & \textbf{Relation description} \\
+\midrule
+\etBooking   & \otPassenger & Records all passengers enrolled in the group reservation. \\
+             & \otBooking   & Records the group reservation object that is opened. \\
+\addlinespace
+\etIssue     & \otPassenger & Records the passenger to whom the ticket is issued. \\
+             & \otTicket    & Records the ticket that is created and assigned. \\
+\addlinespace
+\etAssign    & \otPassenger & Records all passengers assigned to the departure batch. \\
+             & \otDeparture & Records the departure to which the batch is assigned. \\
+\addlinespace
+\etBoard     & \otPassenger & Records the accredited passenger boarding via the fast lane. \\
+             & \otTicket    & Records the ticket scanned at the accreditation gate. \\
+\addlinespace
+\etValidate  & \otPassenger & Records the standard-fare passenger validating at the public gate. \\
+             & \otTicket    & Records the ticket validated at the public gate. \\
+\addlinespace
+\etDepart    & \otPassenger & Records all passengers on board when the vehicle departs. \\
+             & \otDeparture & Records the departure vehicle that leaves. \\
+\addlinespace
+\etComplete  & \otPassenger & Records the passenger who has completed the journey. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Object-to-object (O2O) relations.}
+
+\begin{table}[H]
+\centering\small
+\caption{O2O type-level relations. Both relations are defined statically in the
+log and are verified by \texttt{validate.py}.}
+\label{tab:o2o}
+\begin{tabularx}{\textwidth}{@{}llllX@{}}
+\toprule
+\textbf{Source type} & \textbf{Qualifier} & \textbf{Target type}
+  & \textbf{Cardinality} & \textbf{Description} \\
+\midrule
+\otPassenger & \texttt{holds}      & \otTicket  & one-to-one
+  & Each passenger holds exactly one ticket; each ticket is held by exactly one passenger (R(v)a). \\
+\otPassenger & \texttt{belongs\_to} & \otBooking & many-to-one
+  & Each passenger belongs to exactly one group booking; one booking may cover many passengers (R(v)b). \\
+\bottomrule
+\end{tabularx}
+\end{table}

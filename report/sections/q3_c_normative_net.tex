@@ -1,0 +1,35 @@
+\subsection{(c) Normative OC Petri net $N_1$}
+\label{sec:c}
+
+\begin{figure}[H]
+\centering
+% Replace the placeholder below with: \includegraphics[width=\textwidth]{figures/N1_normative.pdf}
+\placeholder[\textwidth]{%
+  \textbf{N1\_normative.pdf}\\[4pt]
+  Hand-drawn in draw.io / OC$\pi$.\\
+  Export to PDF and place at \texttt{report/figures/N1\_normative.pdf}.
+}
+\caption{Normative OC Petri net $N_1$ for the Olympic transport process.
+Transitions correspond to the seven event types; double (variable-arc) edges
+on the \otPassenger{} place feeding \etDepart{} model the convergent batch
+synchronization required by R(viii).}
+\label{fig:n1}
+\end{figure}
+
+The net $N_1$ contains seven transitions, one for each event type in
+\cref{tab:event-types}, connected by per-object-type places that carry tokens
+representing live object instances.
+The \otPassenger{} lifecycle begins at \etBooking, where a variable arc creates
+one token per passenger enrolled; those tokens flow through \etIssue{} and
+\etAssign{} before reaching an XOR split that routes each token to either
+\etBoard{} or \etValidate{} depending on the \attrFare{} value (R(vii)).
+Both branches reconverge at a shared \otPassenger{} place that feeds
+\etDepart{} via a variable (double) arc, expressing the requirement that
+\emph{all} passengers assigned to a departure must be present before the
+transition fires (R(viii-a) convergence).
+The \otTicket{} subnet runs in parallel: a ticket token is created at
+\etIssue{} and consumed at the boarding transition, while \otBooking{} and
+\otDeparture{} tokens are created by \etBooking{} and \etAssign{} respectively
+and consumed when their lifecycle ends.
+After \etDepart{} fires, individual \otPassenger{} tokens proceed independently
+to \etComplete, reflecting the per-passenger nature of journey completion.

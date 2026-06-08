@@ -1,0 +1,13 @@
+\subsection*{Scenario and domain}
+
+The assigned domain is public transport operated by ASEAG and Deutsche Bahn
+in the context of the \emph{2036 Olympic Games in Aachen}, where a surge in
+passenger demand requires coordinated shuttle and train services for athletes,
+officials, and spectators travelling between Olympic venues.
+The simulated process covers the full journey lifecycle: group reservations are
+created, individual tickets are issued, passengers are assigned to a departure
+batch, each passenger boards via a channel determined by their accreditation
+status, the departure leaves with a synchronized batch of passengers, and every
+passenger individually completes their journey.
+The OCEL\,2.0 event log is submitted as \texttt{data/log.sqlite} (SQLite
+serialization) alongside an optional JSON mirror at \texttt{data/log.json}.

@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- encoding & fonts ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% --- layout ---
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+
+% --- math ---
+\usepackage{amsmath,amssymb}
+
+% --- figures & tables ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{rotating}
+
+% --- code listings ---
+\usepackage{listings}
+\lstset{
+basicstyle=\ttfamily\small,
+breaklines=true,
+frame=single,
+columns=fullflexible,
+showstringspaces=false,
+literate={—}{{\textemdash{}}}1{≥}{{\ensuremath{\geq}}}1
+}
+
+% --- references (load hyperref before cleveref) ---
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% --- project macros: single source of truth for entity names ---
+\newcommand{\otPassenger}{\texttt{Passenger}}
+\newcommand{\otTicket}{\texttt{TravelTicket}}
+\newcommand{\otBooking}{\texttt{GroupBooking}}
+\newcommand{\otDeparture}{\texttt{Departure}}
+\newcommand{\etBooking}{\texttt{CreateGroupBooking}}
+\newcommand{\etIssue}{\texttt{IssueTravelTicket}}
+\newcommand{\etAssign}{\texttt{AssignToDeparture}}
+\newcommand{\etBoard}{\texttt{BoardViaAccreditationLane}}
+\newcommand{\etValidate}{\texttt{ValidateAtPublicGate}}
+\newcommand{\etDepart}{\texttt{Depart}}
+\newcommand{\etComplete}{\texttt{CompleteJourney}}
+\newcommand{\attrFare}{\texttt{fare\_class}}
+
+% --- convenience: placeholder box for missing figures ---
+\newcommand{\placeholder}[2][8cm]{%
+  \fbox{\parbox{#1}{\centering\vspace{1.5cm}\textit{#2}\vspace{1.5cm}}}%
+}
