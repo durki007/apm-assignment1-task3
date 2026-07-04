@@ -26,6 +26,8 @@ discover = "olympic_transport.flatten_discover:main"
 ocpn = "olympic_transport.discover_ocpn:main"
 dotted = "olympic_transport.dotted_chart:main"
 queries = "olympic_transport.queries:main"
+q5a = "olympic_transport.q5a_constraints:main"
+q5b = "olympic_transport.q5b_conformance:main"
 
 [build-system]
 requires = ["poetry-core"]

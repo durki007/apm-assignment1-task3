@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 import r4pm
 import r4pm.bindings as b
+from r4pm.bindings.bindings.slim_ocel_bindings import OCELTypeAttribute
 
 from olympic_transport.config import (
     DATA_DIR, SEED,
@@ -29,7 +30,7 @@ def _build_population(rng: random.Random):
     """Return groups, passengers, tickets, departure→passengers mapping."""
     groups = [f"GB_{i:03d}" for i in range(N_BOOKINGS)]
 
-    passengers = []  # (pid, fare_class, gid)
+    passengers: list[tuple[str, str, str]] = []  # (pid, fare_class, gid)
     for gid in groups:
         n = rng.randint(*PASSENGERS_PER_BOOKING_RANGE)
         for _ in range(n):
@@ -85,7 +86,7 @@ def build_locel():
         b.locel_add_event_type(locel, et, [])
 
     for ot in OBJECT_TYPES:
-        attrs = [{"name": OA_NAME, "type": "string"}] if ot == "TravelTicket" else []
+        attrs: list[OCELTypeAttribute] = [{"name": OA_NAME, "type": "string"}] if ot == "TravelTicket" else []
         b.locel_add_object_type(locel, ot, attrs)
 
     # ── 2. Generate population & timestamps ───────────────────────────────

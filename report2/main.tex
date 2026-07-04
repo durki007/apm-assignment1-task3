@@ -1,0 +1,572 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- encoding & fonts ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% --- layout ---
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+
+% --- math ---
+\usepackage{amsmath,amssymb}
+
+% --- figures & tables ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{rotating}
+\usepackage{multirow}
+
+% --- code listings ---
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  showstringspaces=false,
+  literate={->}{{\ensuremath{\to}}}2
+}
+
+% --- references ---
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% ── Part II entity macros ───────────────────────────────────────────────────
+% Object types
+\newcommand{\otBranches}{\texttt{branches}}
+\newcommand{\otUsers}{\texttt{users}}
+\newcommand{\otFiles}{\texttt{files}}
+\newcommand{\otFileVersions}{\texttt{file versions}}
+
+% Event types
+\newcommand{\etCommit}{\texttt{commit}}
+\newcommand{\etPull}{\texttt{pull}}
+\newcommand{\etMerge}{\texttt{merge}}
+\newcommand{\etPush}{\texttt{push}}
+
+% Constraints
+\newcommand{\Cone}{C1}
+\newcommand{\Ctwo}{C2}
+\newcommand{\Cthree}{C3}
+
+% OCPN names
+\newcommand{\None}{$N_1$}
+\newcommand{\Ntwo}{$N_2$}
+
+% User name
+\newcommand{\userCameron}{\textit{Cameron}}
+
+% Log names
+\newcommand{\logL}{$L$}
+\newcommand{\logLone}{$L_1$}
+\newcommand{\logLuone}{$L_1^{\text{Cameron}}$}
+\newcommand{\logLtwo}{$L_2$}
+
+% Placeholder box for missing figures / tables
+\newcommand{\placeholder}[2][8cm]{%
+  \fbox{\parbox{#1}{\centering\vspace{1.5cm}\textcolor{red}{\textbf{TODO:} #2}\vspace{1.5cm}}}%
+}
+
+% Inline TODO marker
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% ── GSLPN firing-sequence trace table (Q3) ──────────────────────────────────
+% Usage:
+%   \begin{pathtrace}{Path $\pi_1$: caption text}{tab:label}
+%     0 & $\langle\rangle$   & $M_0=\{p_1\}$      & --      & --                       \\
+%     1 & $\langle a\rangle$ & $M_1=\{p_2\}$      & $t_a$   & $1$                      \\
+%     2 & $\langle a,d\rangle$ & $M_2=\{p_3,p_4\}$ & $t_d$ & $\frac{w_d}{w_d+w_x}$      \\
+%   \end{pathtrace}
+% Columns: Step | Trace so far | Marking | Transition fired | Probability
+\newenvironment{pathtrace}[2]{%
+  \def\pathtracecaption{#1}%
+  \def\pathtracelabel{#2}%
+  \begin{table}[H]
+  \centering
+  \begin{tabular}{@{}clccc@{}}
+    \toprule
+    Step & Trace so far & Marking & Transition fired & $P(\text{step})$ \\
+    \midrule
+}{%
+    \bottomrule
+  \end{tabular}
+  \caption{\pathtracecaption}
+  \label{\pathtracelabel}
+  \end{table}
+}
+
+\title{Advanced Process Mining --- Assignment Part II}
+\author{Group $\langle$GroupID$\rangle$ \\ $\langle$Member 1$\rangle$, $\langle$Member 2$\rangle$, $\langle$Member 3$\rangle$}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+% Question 1: Declare  (NOT our responsibility — placeholder only)
+% ─────────────────────────────────────────────────────────────────────────────
+% \section{Question 1: Declare}
+
+% ─────────────────────────────────────────────────────────────────────────────
+% Question 2: EMSC  (NOT our responsibility — placeholder only)
+% ─────────────────────────────────────────────────────────────────────────────
+% \section{Question 2: EMSC}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Question 3: Trace Probabilities in GSLPNs}
+% Q3: Trace Probabilities in GSLPNs
+% This section is completed ENTIRELY BY HAND.
+% No Python automation is provided for Q3.
+%
+% See the GSLPN figure on p.6 of the assignment PDF.
+% Trace: sigma = <a, d, c, e, f>
+
+\subsection*{(a) Stochastic path with highest probability}
+\label{sec:q3a}
+
+% MANUAL STEPS:
+%   1. Enumerate all paths through the GSLPN that project onto sigma = <a,d,c,e,f>.
+%      A path is a sequence of transitions (including silent ones) whose visible
+%      labels match sigma in order.
+%   2. For each path, compute the path probability using the embedded DTMC:
+%      - From any marking M where only timed transitions fire:
+%          P(ti fires) = w(ti) / sum w(tj enabled)
+%      - When immediate transitions are enabled they fire before timed ones:
+%          P(ti fires) = w(ti) / sum w(tj enabled immediate)
+%   3. Identify the path with the highest probability.
+
+% Fill in one \pathtrace table per path that projects onto sigma (duplicate the
+% block below for pi_2, pi_3, ... as needed -- e.g. one per silent-transition
+% routing choice). Each row is one firing step: step index, trace observed so
+% far, marking reached, transition that fired, and the probability of firing
+% it from the previous marking (use the timed-race or immediate-choice rule
+% as appropriate; "--" for the initial marking / forced steps with prob. 1).
+
+\begin{pathtrace}{Path $\pi_1$: $\langle a,d,c,e,f\rangle$ via $(t_0, t_2, t_3, t_5, t_{10}, t_{11}, t_6, t_4, t_6, t_7)$ }{tab:q3a-pi1}
+      0 & $\langle\rangle$           & $M_0 = \lbrace p_0 \rbrace$ & $t_0$ & 1                \\
+      1 & $\langle a\rangle$         & $M_1 = \lbrace p_1, p_2\rbrace$ & $t_2$   & $\frac{3}{5} $      \\
+      2 & $\langle a,d\rangle$       & $M_2 = \lbrace \rbrace$ & $t_d$   & $\frac{1}{1}$       \\
+      3 & $\langle a,d,c\rangle$     & $M_3 = \lbrace \rbrace$ & $t_c$   & $\frac{1}{1}$       \\
+      4 & $\langle a,d,c,e\rangle$   & $M_4 = \lbrace \rbrace$ & $t_e$   & $\frac{1}{1}      $ \\
+      5 & $\langle a,d,c,e,f\rangle$ & $M_5 = \lbrace \rbrace$ & $t_f$   & $\frac{1}{1}$       \\
+\end{pathtrace}
+
+\[
+      P(\pi_1) = \TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob} = \TODO{value}
+\]
+
+\begin{pathtrace}{Path $\pi_2$: $\langle a,d,c,e,f\rangle$ via \TODO{describe alternate routing}}{tab:q3a-pi2}
+      0 & $\langle\rangle$           & $M_0 = \TODO{marking}$ & --      & --                \\
+      1 & $\langle a\rangle$         & $M_1 = \TODO{marking}$ & $t_a$   & \TODO{prob}       \\
+      \multicolumn{5}{c}{\TODO{...}} \\
+      5 & $\langle a,d,c,e,f\rangle$ & $M_5 = \TODO{marking}$ & $t_f$   & \TODO{prob}       \\
+\end{pathtrace}
+
+\[
+      P(\pi_2) = \TODO{value}
+\]
+
+% Add further \pathtrace blocks for any remaining paths, then compare:
+\[
+      \max\bigl(P(\pi_1), P(\pi_2), \dots\bigr) = P(\TODO{$\pi_i$}) = \TODO{value}
+\]
+
+\TODO{State which path attains the maximum and give a one-sentence justification.}
+
+
+
+\subsection*{(b) Probability of observing trace $\sigma$}
+\label{sec:q3b}
+
+% MANUAL STEPS:
+%   The probability P(sigma) = sum P(path) over all paths projecting to sigma.
+%   For paths involving competing timed transitions, weight by their rates
+%   (exponential race): the probability that t_i fires before t_j is
+%       w_i / (w_i + w_j).
+%   For competing immediate transitions: w_i / sum w_j.
+%   Combine these factors along each path to get P(path), then sum.
+
+\begin{align*}
+      P(\sigma) & = P(\pi_1) + P(\pi_2) + \dots         \\
+                & = \TODO{value} + \TODO{value} + \dots \\
+                & = \TODO{final value}
+\end{align*}
+
+\TODO{Briefly justify why exactly these paths (from part (a)) are the ones
+      that project onto $\sigma$, and confirm no other path was missed.}
+
+% ─────────────────────────────────────────────────────────────────────────────
+% Question 4: Modeling with GSPNs  (NOT our responsibility)
+% ─────────────────────────────────────────────────────────────────────────────
+% \section{Question 4: Modeling with GSPNs}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Question 5: Object-Centric Process Mining}
+% Q5 introduction: domain description
+% ─────────────────────────────────────────────────────────────────────────────
+
+The object-centric event log \logL{} records a collaborative coding process in a
+Git-based version control system.
+The object types are
+$OT = \{\otBranches{},\, \otUsers{},\, \otFiles{},\, \otFileVersions{}\}$
+and the event types are
+$ET = \{\etCommit{},\, \etPull{},\, \etMerge{},\, \etPush{}\}$.
+File versions are linked to their parent file via the object-object relation
+\texttt{is\_a}.
+When users commit, event-object qualifiers \texttt{produce} (new version) and
+\texttt{consume} (old version) record which file versions were created or
+superseded.
+The full log is provided as an OCEL~2.0 file \texttt{version\_control.sqlite}.
+
+% Q5a: Constraint checking C1, C2, C3
+% ─────────────────────────────────────────────────────────────────────────────
+% Results are produced by:  poetry run q5a   (from the code/ directory)
+% Copy the script output into the TODO blocks below.
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{(a) Checking C1, C2, C3 with OCPQ (4.5 points)}
+
+For each constraint we describe the OCPQ query used to check it against the event log $L$,
+show a screenshot of the query and its result, and briefly explain the underlying logic.
+
+% -------------------------------------------------------------------
+\subsubsection*{C1: ``You should pull before you push, and you should not do anything
+      between the pull and the push except for possibly a merge.''}
+
+\paragraph{Query.} We use a nested query tree with three levels.
+
+\begin{itemize}
+      \item \textbf{Root node} -- all push events on a branch:
+            variables $e_2 : \text{push}$, $o_1 : \text{branches}$;
+            filter $\mathrm{E2O}(e_2, o_1)$.
+      \item \textbf{Child node} -- candidate pulls preceding this push on the same branch:
+            variable $e_1 : \text{pull}$ (inherits $o_1$);
+            filters $\mathrm{E2O}(e_1, o_1)$ and \texttt{e1.time() < e2.time()}.
+      \item \textbf{Grandchild node} -- events strictly between $e_1$ and $e_2$, excluding merges:
+            variable $e_3 : *$;
+            filters
+            \texttt{e1.id() != e3.id() \&\& e2.id() != e3.id()},
+            \texttt{e1.time() < e3.time()},
+            \texttt{e3.time() < e2.time()},
+            \texttt{e3.attr("ocel:activity") != "merge"}.
+\end{itemize}
+
+Constraints: on the \emph{child} (pull) node we require $|\text{grandchild}| \le 0$, which keeps
+only the \emph{clean} pull witnesses -- pulls with nothing (other than possibly a merge) between
+them and the push. On the \emph{root} (push) node we require $|\text{child}| \ge 1$: a push is
+compliant iff at least one clean witness pull remains.
+
+\begin{figure}[h]
+      \centering
+      \includegraphics[width=0.8\textwidth,height=0.5\textheight,keepaspectratio]{figures/c1_query_screenshot.png}
+      \caption{OCPQ query for C1 (three nested nodes) and result: 4 of 30 pushes violate C1
+            (86.67\% compliance).}
+      \label{fig:c1-query}
+\end{figure}
+
+\paragraph{Result and explanation.} The query flags 4 of the 30 pushes as violations (see
+Figure~\ref{fig:c1-query}). A push is only counted as compliant if it has an \emph{immediately}
+preceding pull on the same branch, with no event other than a merge in between; existence of some
+\emph{earlier}, non-adjacent pull is not sufficient, since anything (including another push or
+commit) sitting between that pull and the push disqualifies it as a witness. The four flagged
+pushes either have no preceding pull on their branch at all, or every earlier pull is separated
+from them by an intervening non-merge event.
+
+% -------------------------------------------------------------------
+\subsubsection*{C2: ``Do not alternate between branches: after committing to one branch $b$,
+      you should not touch a different branch until having pushed to $b$.''}
+
+\paragraph{Query.} Again a three-level nested query tree.
+
+\begin{itemize}
+      \item \textbf{Root node} -- all commits: variables $e_1 : \text{commit}$,
+            $o_1 : \text{branches}$, $o_2 : \text{users}$;
+            filters $\mathrm{E2O}(e_1, o_1)$, $\mathrm{E2O}(e_1, o_2)$.
+      \item \textbf{Child node} -- candidate later pushes to the same branch by the same user:
+            variable $e_2 : \text{push}$ (inherits $o_1$, $o_2$);
+            filters $\mathrm{E2O}(e_2, o_1)$, $\mathrm{E2O}(e_2, o_2)$,
+            \texttt{e1.time() < e2.time()}.
+      \item \textbf{Grandchild node} -- events by the same user on a \emph{different} branch,
+            strictly between $e_1$ and this candidate push:
+            variable $e_3 : *$, $o_3 : \text{branches}$;
+            filters $\mathrm{E2O}(e_3, o_2)$, $\mathrm{E2O}(e_3, o_3)$,
+            \texttt{o3.id() != o1.id()},
+            \texttt{e1.time() < e3.time()},
+            \texttt{e3.time() < e2.time()}.
+\end{itemize}
+
+Constraints: on the \emph{child} (push) node we require $|\text{grandchild}| \le 0$, keeping only
+pushes to $b$ that are not preceded by activity of the same user on a different branch. On the
+\emph{root} (commit) node we require $|\text{child}| \ge 1$: a commit is compliant iff at least
+one such clean push exists afterwards.
+
+\begin{figure}[h]
+      \centering
+      \includegraphics[width=0.8\textwidth,height=0.5\textheight,keepaspectratio]{figures/c2_query_screenshot.png}
+      \caption{OCPQ query for C2 (three nested nodes) and result: 2 of 39 commits violate C2
+            (94.87\% compliance).}
+      \label{fig:c2-query}
+\end{figure}
+
+\paragraph{Result and explanation.} 2 of the 39 commits violate C2 (see
+Figure~\ref{fig:c2-query}). A commit is compliant if the committing user eventually pushes to the
+same branch again without first touching a different branch; committing again, or pulling, on
+the \emph{same} branch $b$ in between does not count against the constraint, only activity tied
+to a \emph{different} branch object does. Of the two violating commits, at least one case
+corresponds to the user touching a different branch before ever pushing to $b$; the other case
+may correspond to the user never pushing to $b$ again at all -- both are genuine violations of
+C2, but for different underlying reasons.
+
+% -------------------------------------------------------------------
+\subsubsection*{C3: ``Avoid coordination problems: a coordination problem between two users
+      $u_1 \neq u_2$ is a merge event that consumes two versions of the same file, where one version
+      was committed by $u_1$ and the other by $u_2$.''}
+
+\paragraph{Query.} Unlike C1 and C2, C3 is not an existential (``does a witness exist'')
+condition but a direct pattern match, so a single flat query node suffices.
+
+\begin{itemize}
+      \item Object variables: $o_1, o_2 : \text{file versions}$, $o_3 : \text{files}$,
+            $o_4, o_5 : \text{users}$.
+      \item Event variables: $e_1 : \text{merge}$, $e_2, e_3 : \text{commit}$.
+      \item Filters:
+            $\mathrm{E2O}(e_1, o_1)$@consume, $\mathrm{E2O}(e_1, o_2)$@consume,
+            $\mathrm{O2O}(o_1, o_3)$@is\_a, $\mathrm{O2O}(o_2, o_3)$@is\_a,
+            $\mathrm{E2O}(e_2, o_1)$@produce, $\mathrm{E2O}(e_3, o_2)$@produce,
+            $\mathrm{E2O}(e_2, o_4)$, $\mathrm{E2O}(e_3, o_5)$;
+            CEL constraints \texttt{o1.id() < o2.id()} and \texttt{o4.id() != o5.id()}.
+\end{itemize}
+
+The condition \texttt{o1.id() < o2.id()} imposes a canonical ordering on the two conflicting
+versions so that each real coordination problem is counted exactly once (without it, every
+coordination problem would be found twice, as $(o_1,o_2)$ and $(o_2,o_1)$). The condition
+\texttt{o4.id() != o5.id()} is the actual C3 condition: the two versions were committed by
+different users.
+
+\begin{figure}[h]
+      \centering
+      \includegraphics[width=0.8\textwidth,height=0.5\textheight,keepaspectratio]{figures/c3_query_screenshot.png}
+      \caption{OCPQ query for C3 (single flat node) and result: 6 coordination problems found.}
+      \label{fig:c3-query}
+\end{figure}
+
+\paragraph{Result and explanation.} The query returns 6 output bindings (see
+Figure~\ref{fig:c3-query}), i.e. 6 coordination problems: pairs of file versions of the same
+file, produced by two different users, that were both consumed by the same merge event. Each
+binding directly witnesses one instance of the pattern described by C3, so no separate
+compliance percentage is computed here -- the count itself is the answer. Note that this counts
+\emph{version pairs}; if a single merge consumed more than two conflicting versions it would
+contribute multiple pairs to this count rather than being counted once per merge.
+
+% Q5b: Flattening-based conformance checking for Cameron
+% ─────────────────────────────────────────────────────────────────────────────
+% Results are produced by:  poetry run q5b   (from the code/ directory)
+% Copy the script output into the TODO blocks below.
+%
+% Manual items in this section:
+%   - Include the N1 figure (screenshot the figure from assignment PDF p.9,
+%     save as report2/figures/N1_ocpn.png, then uncomment the figure below).
+%   - Fill in each token-replay table from the script output.
+%   - Fill in each alignment table from the script output.
+%   - Draw / export the prefix automata for the precision computation.
+%   - Write the C1 / C2 interpretation paragraphs.
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{(b) Conformance checking for Cameron}
+\label{sec:q5b}
+
+\subsubsection*{OCPN \None{}}
+
+The accepting object-centric Petri net \None{} used for conformance checking
+is given in the assignment.
+Its transitions are \etCommit, \etPull, \etMerge, and \etPush.
+The \otBranches{} subnet and the \otUsers{} subnet each follow the pattern
+$\etCommit^+ \to \etPull \to [\etMerge]? \to \etPush$ (with a loop for multiple
+rounds) where \etMerge{} is optional.
+
+\begin{figure}[H]
+      \centering
+      % TODO: screenshot the N1 figure from the assignment PDF (page 9),
+      %       save it as report2/figures/N1_ocpn.png, then uncomment:
+      % \includegraphics[width=0.85\textwidth,height=0.5\textheight,keepaspectratio]{figures/N1_ocpn.png}
+      \placeholder[12cm]{N1 figure — screenshot from assignment PDF p.9 and save as figures/N1\_ocpn.png}
+      \caption{Accepting OCPN \None{} (from the assignment).}
+      \label{fig:n1}
+\end{figure}
+
+\subsubsection*{Constructing \logLuone{}}
+
+\logLone{} is the view of \logL{} restricted to object types \otBranches{} and
+\otUsers{} (i.e.\ \otFiles{} and \otFileVersions{} are removed).
+\logLuone{} is obtained from \logLone{} by first removing all events in which
+\userCameron{} is not involved, then removing all objects disconnected from
+the remaining events, and finally removing all dangling relations.
+
+\subsubsection*{Flattened traces}
+
+Flattening \logLuone{} to the \otBranches{} object type yields one trace per
+branch that \userCameron{} worked on; flattening to \otUsers{} yields a single
+trace for \userCameron.
+
+% TODO: run  poetry run q5b  and paste the "Flattened traces" output here.
+%       Then reformat it as the two tables below.
+
+\paragraph{Branches flattening.}
+
+\begin{table}[H]
+      \centering\small
+      \caption{Traces per branch (\otBranches{} flattening of \logLuone{}).}
+      \label{tab:traces-branches}
+      \begin{tabularx}{\textwidth}{@{}lX@{}}
+            \toprule
+            \textbf{Branch} & \textbf{Trace}              \\
+            \midrule
+            % TODO: one row per branch, e.g.:
+            % b1 & commit $\to$ pull $\to$ push \\
+            \TODO{paste branch traces from script output} \\
+            \bottomrule
+      \end{tabularx}
+\end{table}
+
+\paragraph{Users flattening.}
+
+\begin{table}[H]
+      \centering\small
+      \caption{Trace for \userCameron{} (\otUsers{} flattening of \logLuone{}).}
+      \label{tab:traces-users}
+      \begin{tabularx}{\textwidth}{@{}lX@{}}
+            \toprule
+            \textbf{User} & \textbf{Trace}             \\
+            \midrule
+            % TODO: single row, e.g.:
+            % Cameron & commit $\to$ pull $\to$ push $\to$ \ldots \\
+            \TODO{paste user trace from script output} \\
+            \bottomrule
+      \end{tabularx}
+\end{table}
+
+\subsubsection*{Token-based replay fitness}
+
+Token-based replay is performed on each flattened log against the corresponding
+subnet of \None.
+
+% TODO: For each trace, show the token counts per place at each step
+%       (manually trace through the net, or copy from the script output).
+
+\paragraph{Branches subnet — token replay.}
+
+\begin{table}[H]
+      \centering\small
+      \caption{Token replay diagnostics — \otBranches{} subnet.}
+      \label{tab:replay-branches}
+      \begin{tabular}{@{}lcccccc@{}}
+            \toprule
+            \textbf{Trace (branch)}  & \textbf{Fit?}     & \textbf{Fitness} &
+            \textbf{Consumed}        & \textbf{Produced} & \textbf{Missing} & \textbf{Remaining}         \\
+            \midrule
+            % TODO: one row per branch trace — values from script output.
+            \TODO{paste from script} &                   &                  &                    &  &  & \\
+            \midrule
+            \textbf{Average}         &                   & \TODO{value}     &                    &  &  & \\
+            \bottomrule
+      \end{tabular}
+\end{table}
+
+\paragraph{Users subnet — token replay.}
+
+\begin{table}[H]
+      \centering\small
+      \caption{Token replay diagnostics — \otUsers{} subnet.}
+      \label{tab:replay-users}
+      \begin{tabular}{@{}lcccccc@{}}
+            \toprule
+            \textbf{Trace (user)}    & \textbf{Fit?}     & \textbf{Fitness} &
+            \textbf{Consumed}        & \textbf{Produced} & \textbf{Missing} & \textbf{Remaining}         \\
+            \midrule
+            % TODO: one row — values from script output.
+            \TODO{paste from script} &                   &                  &                    &  &  & \\
+            \midrule
+            \textbf{Average}         &                   & \TODO{value}     &                    &  &  & \\
+            \bottomrule
+      \end{tabular}
+\end{table}
+
+\paragraph{Aggregated fitness.}
+
+% TODO: fill in values from the script summary line.
+The average token-based replay fitness over both subnets is
+$\bar{f} = \frac{f_{\text{branches}} + f_{\text{users}}}{2} = \TODO{value}$.
+
+\subsubsection*{Alignment-based precision}
+
+% TODO: For precision, draw the prefix automaton built from the flattened traces
+%       for each subnet, overlay it on the reachable state space of the subnet,
+%       and identify the escaping edges.
+%       The script computes the numeric precision; show the automata here.
+
+\paragraph{Branches subnet — prefix automaton.}
+
+\begin{figure}[H]
+      \centering
+      \placeholder[10cm]{Prefix automaton for branches traces — draw manually or export from ProM}
+      \caption{Prefix automaton of branches traces against \None{} branches subnet.}
+      \label{fig:prefix-branches}
+\end{figure}
+
+\paragraph{Users subnet — prefix automaton.}
+
+\begin{figure}[H]
+      \centering
+      \placeholder[10cm]{Prefix automaton for users trace — draw manually or export from ProM}
+      \caption{Prefix automaton of Cameron's trace against \None{} users subnet.}
+      \label{fig:prefix-users}
+\end{figure}
+
+\paragraph{Aggregated precision.}
+
+% TODO: fill in values from the script summary line.
+The average alignment-based precision over both subnets is
+$\bar{p} = \frac{p_{\text{branches}} + p_{\text{users}}}{2} = \TODO{value}$.
+
+\subsubsection*{Fitness and precision summary}
+
+\begin{table}[H]
+      \centering\small
+      \caption{Aggregated conformance results for \logLuone{} vs.\ \None.}
+      \label{tab:conformance-summary}
+      \begin{tabular}{@{}lcc@{}}
+            \toprule
+            \textbf{Subnet}  & \textbf{Token-replay fitness} & \textbf{Alignment precision} \\
+            \midrule
+            \otBranches      & \TODO{value}                  & \TODO{value}                 \\
+            \otUsers         & \TODO{value}                  & \TODO{value}                 \\
+            \midrule
+            \textbf{Average} & \TODO{value}                  & \TODO{value}                 \\
+            \bottomrule
+      \end{tabular}
+\end{table}
+
+\subsubsection*{Checking C1 and C2 for Cameron}
+
+\paragraph{C1 (pull before push).}
+\TODO{2--3 sentences: does the fitness score reflect whether Cameron violated C1?
+      For example: a fitness of 1.0 means every trace replays perfectly,
+      implying Cameron always pulled before pushing (as required by C1).
+      Or: explain what a fitness $< 1$ would mean in terms of C1.}
+
+\paragraph{C2 (no branch-switching after commit).}
+\TODO{2--3 sentences: can the conformance results confirm or deny C2 for Cameron?
+      Note that C2 is a cross-branch constraint whereas N1 is per-object —
+      discuss whether flattening-based conformance is sufficient to detect C2
+      violations or whether it requires a different approach.}
+
+\end{document}
