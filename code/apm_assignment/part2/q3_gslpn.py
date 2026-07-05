@@ -253,10 +253,17 @@ def solve_linear(matrix: List[List[Fraction]], rhs: List[Fraction]) -> List[Frac
     return [a[i][n] for i in range(n)]
 
 
-def probability_of_sigma(graph: Dict[State, List[Tuple[str, Fraction, State]]], start: State, accept: State) -> Fraction:
-    """P(sigma) = absorption probability into `accept` in the embedded DTMC
-    restricted to sigma-consistent transitions:  x_s = sum_edges p * x_s' ,
-    x_accept = 1, and any other state with no outgoing edges has x_s = 0.
+def build_absorption_system(
+    graph: Dict[State, List[Tuple[str, Fraction, State]]],
+    accept: State,
+) -> Tuple[List[State], Dict[State, int], List[List[Fraction]], List[Fraction]]:
+    """Set up x_s = sum_{s->s'} p * x_s' for every non-accepting state s
+    (x_accept := 1 is substituted in, not a variable), as a matrix equation
+    (I - P) x = b. Any transition pruned by `step_edges` (wrong/extra visible
+    label) is simply absent here -- its probability mass implicitly goes to
+    a reject sink with x = 0, so a state's coefficients need not sum to 1.
+    States are indexed in `graph`'s discovery order, so index 0 is always
+    the start state.
     """
     states = [s for s in graph if s != accept]
     index = {s: i for i, s in enumerate(states)}
@@ -274,7 +281,65 @@ def probability_of_sigma(graph: Dict[State, List[Tuple[str, Fraction, State]]], 
             else:
                 matrix[i][index[s2]] -= p
 
+    return states, index, matrix, rhs
+
+
+def format_equations(
+    states: List[State],
+    index: Dict[State, int],
+    graph: Dict[State, List[Tuple[str, Fraction, State]]],
+    accept: State,
+) -> List[str]:
+    """Render x_s = sum p*x_s' for each state, aggregating parallel edges to
+    the same target (e.g. two different transitions landing on the same
+    next state) into a single coefficient."""
+    lines = []
+    for s in states:
+        i = index[s]
+        agg: Dict[Optional[int], Fraction] = {}
+        for _, p, s2 in graph[s]:
+            key = index[s2] if s2 != accept else None  # None = the constant "1" term
+            agg[key] = agg.get(key, Fraction(0)) + p
+
+        terms = [f"{p}*x{j}" for j, p in agg.items() if j is not None]
+        if None in agg:
+            terms.append(str(agg[None]))  # coefficient times x_accept=1
+
+        marking, idx = s
+        tag = "  [start]" if i == 0 else ""
+        rhs = " + ".join(terms) if terms else "0"
+        label = f"x{i}".ljust(len(f"x{len(states) - 1}") + 1)
+        lines.append(f"  {label} = {rhs:<28} ({_fmt_marking(marking)}, matched={idx}){tag}")
+    return lines
+
+
+def probability_of_sigma(
+    graph: Dict[State, List[Tuple[str, Fraction, State]]],
+    start: State,
+    accept: State,
+    verbose: bool = False,
+) -> Fraction:
+    """P(sigma) = absorption probability into `accept` in the embedded DTMC
+    restricted to sigma-consistent transitions."""
+    states, index, matrix, rhs = build_absorption_system(graph, accept)
+
+    if verbose:
+        print(f"  {len(states)} unknowns x0..x{len(states) - 1} (x_accept := 1 substituted in); "
+              f"solving x_s = sum_(s->s') p * x_s' :")
+        for line in format_equations(states, index, graph, accept):
+            print(line)
+
     solution = solve_linear(matrix, rhs)
+
+    if verbose:
+        print("  Solved values:")
+        label_width = len(f"x{len(states) - 1}") + 1
+        for s in states:
+            i = index[s]
+            marking, idx = s
+            label = f"x{i}".ljust(label_width)
+            print(f"  {label} = {str(solution[i]):<14} = {float(solution[i]):.6f}   ({_fmt_marking(marking)}, matched={idx})")
+
     return solution[index[start]] if start in index else Fraction(1)
 
 
@@ -310,8 +375,8 @@ def main() -> None:
     print(f"  P(best path) = {prob_a}  =  {float(prob_a):.6f}")
 
     print("\n=== (b) P(sigma) -- total probability over all matching paths ===")
-    prob_b = probability_of_sigma(graph, START, ACCEPT)
-    print(f"  P(sigma) = {prob_b}  =  {float(prob_b):.6f}")
+    prob_b = probability_of_sigma(graph, START, ACCEPT, verbose=True)
+    print(f"  P(sigma) = x0 = {prob_b}  =  {float(prob_b):.6f}")
 
 
 if __name__ == "__main__":
