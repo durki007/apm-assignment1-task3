@@ -4,13 +4,13 @@ Python equivalents of the OCPQ queries (subtasks f-i, f-ii, f-iii, g).
 These verify the logic before/after building the OCPQ node trees.
 OCPQ screenshots remain the submitted artifact.
 
-Run:  poetry run python -m olympic_transport.queries
+Run:  poetry run python -m apm_assignment.part1.queries
       # or:  poetry run queries
 """
 import pandas as pd
 import pm4py
 
-from olympic_transport.config import DATA_DIR, OA_NAME, ET_X1, ET_X2
+from apm_assignment.part1.config import DATA_DIR, OA_NAME, ET_X1, ET_X2
 
 # Query parameters
 C = "accredited"   # (f-i, f-ii) fare_class value of interest

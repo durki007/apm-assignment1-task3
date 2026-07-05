@@ -19,7 +19,13 @@ cd code
 poetry install          # first-time setup
 ```
 
-System requirement: **Graphviz** (`dot` binary) must be on `PATH`. `config.py` auto-probes common Windows install paths.
+System requirement: **Graphviz** (`dot` binary) must be on `PATH`. `paths.py` auto-probes common Windows install paths.
+
+The `apm_assignment` package is split into two subpackages: `part1/` (Q3 of Part 1 — the
+olympic transport OCEL simulation) and `part2/` (Q3, Q5a, Q5b of Part 2). `paths.py`, at the
+package root, holds filesystem paths shared by both (`ROOT_DIR`, `DATA_DIR`, `MODELS_DIR`,
+`FIGURES_DIR`, `FIGURES2_DIR`) plus the Graphviz `PATH` probe; `part1/config.py` re-exports the
+path constants and adds Part 1's domain constants (object/event types, sizing, RNG seed).
 
 ### Run the Part 1 pipeline (in order)
 
@@ -35,7 +41,8 @@ poetry run queries      # Python equivalents of OCPQ queries
 ### Run individual modules
 
 ```bash
-poetry run python -m olympic_transport.<module_name>
+poetry run python -m apm_assignment.part1.<module_name>   # Part 1 modules
+poetry run python -m apm_assignment.part2.<module_name>   # Part 2 modules
 ```
 
 ---
@@ -68,11 +75,14 @@ LaTeX conventions (from the spec):
 
 ## Code architecture
 
-### Part 1 module layout (`code/olympic_transport/`)
+`code/apm_assignment/paths.py` — shared paths (`ROOT_DIR`, `DATA_DIR`, `MODELS_DIR`,
+`FIGURES_DIR`, `FIGURES2_DIR`) and the Graphviz `PATH` probe, used by both subpackages below.
+
+### Part 1 module layout (`code/apm_assignment/part1/`)
 
 | File | Role |
 |---|---|
-| `config.py` | **Single source of truth.** All object types, event types, attribute names, sizing constants, RNG seed, and file paths. Edit here first. |
+| `config.py` | **Single source of truth for Part 1.** Object types, event types, attribute names, sizing constants, RNG seed; re-exports the path constants from `paths.py`. Edit here first. |
 | `generate_log.py` | Builds and exports the OCEL 2.0 log to `data/log.sqlite` using `r4pm`. |
 | `validate.py` | Checks requirements R(i)–R(v) against the loaded OCEL. |
 | `flatten_discover.py` | Flattens OCEL to `TravelTicket` and `Passenger`, discovers Petri nets with PM4Py inductive miner. |
@@ -84,13 +94,13 @@ LaTeX conventions (from the spec):
 ### Data pipeline dependency order
 
 ```
-config.py
-    └─▶ generate_log.py ──▶ data/log.sqlite
-            ├─▶ validate.py
-            ├─▶ flatten_discover.py  → models/ + figures/
-            ├─▶ discover_ocpn.py     → figures/
-            ├─▶ dotted_chart.py      → figures/
-            └─▶ queries.py
+part1/config.py
+    └─▶ part1/generate_log.py ──▶ data/log.sqlite
+            ├─▶ part1/validate.py
+            ├─▶ part1/flatten_discover.py  → models/ + figures/
+            ├─▶ part1/discover_ocpn.py     → figures/
+            ├─▶ part1/dotted_chart.py      → figures/
+            └─▶ part1/queries.py
 ```
 
 Nothing downstream can run before `data/log.sqlite` exists.
@@ -118,27 +128,25 @@ Nothing downstream can run before `data/log.sqlite` exists.
 - Q5a and Q5b use **Python code instead of OCPQ queries**. Run `poetry run q5a` and `poetry run q5b`.
 - The Part 2 LaTeX report is in `report2/` (separate from Part 1's `report/`). Build with `latexmk -pdf main.tex` from `report2/`.
 
-### Part 2 Python modules
+### Part 2 module layout (`code/apm_assignment/part2/`)
 
 | Script entry | Module | Purpose |
 |---|---|---|
-| `poetry run q3` | `q3_gslpn.py` | Solve GSLPN path (a) and trace (b) probabilities for sigma = <a,d,c,e,f> |
+| `poetry run q3` | `q3_gslpn.py` | Solve GSLPN path (a) and trace (b) probabilities for sigma = <a,d,c,e,f>; also renders `report2/figures/gslpn_net.png` |
 | `poetry run q5a` | `q5a_constraints.py` | Check C1, C2, C3 on `version_control.sqlite` |
 | `poetry run q5b` | `q5b_conformance.py` | Filter to Cameron, flatten, token replay, precision |
 
-### What still needs manual work (Part 2)
+### Status (Part 2)
 
 Note: Part 2's report is a single `report2/main.tex` (no separate `sections/` files
 despite the module-per-question table above referencing script names).
 
-| Item | Location | Action needed |
-|---|---|---|
-| Q3 (a) and (b) | `report2/main.tex` (`sec:q3a`, `sec:q3b`) | Copy `poetry run q3` output into the `\pathtrace` tables and probability values — still `\TODO` |
-
-Q5a is done (real OCPQ screenshots + explanations already in `report2/main.tex`).
-Q5b is done (N1 subnet figure, flattened traces, token-replay tables, alignments,
-prefix automata figures, and C1/C2 interpretation all filled in from
-`poetry run q5b` output — see `q5b_conformance.py`).
+Q3, Q5a, and Q5b are all done: `report2/main.tex` is filled in from each script's output
+(Q3's `\pathtrace` tables/values and net figure from `q3_gslpn.py`; Q5a's OCPQ-equivalent
+violations from `q5a_constraints.py`; Q5b's N1 subnet figure, flattened traces, token-replay
+tables, alignments, prefix automata figures, and C1/C2 interpretation from `q5b_conformance.py`).
+When referring to these scripts in the report, cite only the filename (e.g. `q3_gslpn.py`), not
+run instructions.
 
 ### Data for Part 2
 
@@ -158,7 +166,7 @@ Event types: `commit` (39), `pull` (26), `push` (30), `merge` (5)
 
 ## Key design invariants (Part 1)
 
-- RNG seed is fixed (`SEED = 42` in `config.py`) — regenerating the log reproduces every figure and query result exactly.
+- RNG seed is fixed (`SEED = 42` in `part1/config.py`) — regenerating the log reproduces every figure and query result exactly.
 - `fare_class` on `TravelTicket` is a **static** attribute encoded as a single epoch-stamped `r4pm` history entry. Do not write multiple history values.
 - `AssignToDeparture` and `Depart` are emitted **once per departure** over the **identical** passenger set — diverging these two sets silently breaks R(viii-a).
 - PM4Py API names drift between versions. The installed version is pinned in `code/poetry.lock`. Check actual installed API before calling flattening/visualization helpers.

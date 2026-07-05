@@ -1,7 +1,7 @@
 """
 Synchronization dotted chart showing AssignToDeparture → Depart per Passenger (subtask d-vi).
 
-Run:  poetry run python -m olympic_transport.dotted_chart
+Run:  poetry run python -m apm_assignment.part1.dotted_chart
       # or:  poetry run dotted
 """
 import matplotlib
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pm4py
 
-from olympic_transport.config import DATA_DIR, FIGURES_DIR, ET_GROUP, ET_SYNC
+from apm_assignment.part1.config import DATA_DIR, FIGURES_DIR, ET_GROUP, ET_SYNC
 
 
 def main():

@@ -124,9 +124,9 @@
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Question 3: Trace Probabilities in GSLPNs}
 % Q3: Trace Probabilities in GSLPNs
-% Solved with poetry run q3 (olympic_transport/q3_gslpn.py): the net below is
-% entered by hand from the figure on p.6 of the assignment PDF, then a
-% generic marking-graph / embedded-DTMC solver computes (a) and (b).
+% Solved by q3_gslpn.py: the net below is entered by hand from the figure on
+% p.6 of the assignment PDF, then a generic marking-graph / embedded-DTMC
+% solver computes (a) and (b).
 %
 % Trace: sigma = <a, d, c, e, f>
 
@@ -134,7 +134,7 @@
       \centering
       \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{figures/gslpn_net.png}
       \caption{The GSLPN from the assignment (p.6), redrawn from the encoding used by
-            \texttt{q3\_gslpn.py} (\texttt{poetry run q3}). Layout differs from the
+            \texttt{q3\_gslpn.py}. Layout differs from the
             original figure (auto-generated left-to-right), but the places, transitions,
             weights and arcs are identical. Legend: plain box = timed, thick-bordered
             box = immediate (visible), grey box = $\tau$ and timed, black box = $\tau$
@@ -145,7 +145,7 @@
 \subsection*{(a) Stochastic path with highest probability}
 \label{sec:q3a}
 
-Computed by \texttt{poetry run q3} (\texttt{q3\_gslpn.py}): every enabled transition set is
+Computed by \texttt{q3\_gslpn.py}: every enabled transition set is
 split into immediate/timed per the priority rule, the winning class races by weight, and the
 highest-probability firing sequence projecting onto $\sigma$ is found with a Dijkstra variant
 that maximizes a product of probabilities instead of minimizing a sum of costs.
@@ -223,8 +223,7 @@ The full log is provided as an OCEL~2.0 file \texttt{version\_control.sqlite}.
 
 % Q5a: Constraint checking C1, C2, C3
 % ─────────────────────────────────────────────────────────────────────────────
-% Results are produced by:  poetry run q5a   (from the code/ directory)
-% Copy the script output into the TODO blocks below.
+% Cross-checked against q5a_constraints.py.
 % ─────────────────────────────────────────────────────────────────────────────
 
 \subsection*{(a) Checking C1, C2, C3 with OCPQ (4.5 points)}
@@ -363,16 +362,7 @@ contribute multiple pairs to this count rather than being counted once per merge
 
 % Q5b: Flattening-based conformance checking for Cameron
 % ─────────────────────────────────────────────────────────────────────────────
-% Results are produced by:  poetry run q5b   (from the code/ directory)
-% Copy the script output into the TODO blocks below.
-%
-% Manual items in this section:
-%   - Include the N1 figure (screenshot the figure from assignment PDF p.9,
-%     save as report2/figures/N1_ocpn.png, then uncomment the figure below).
-%   - Fill in each token-replay table from the script output.
-%   - Fill in each alignment table from the script output.
-%   - Draw / export the prefix automata for the precision computation.
-%   - Write the C1 / C2 interpretation paragraphs.
+% Results produced by q5b_conformance.py.
 % ─────────────────────────────────────────────────────────────────────────────
 
 \subsection{(b) Conformance checking for Cameron}
@@ -387,7 +377,7 @@ contribute multiple pairs to this count rather than being counted once per merge
 \end{figure}
 
 Applying the given definition of \logLuone{} for $u=\userCameron$
-(\texttt{q5b.py}) yields 13 events, flattened below per object type.
+(\texttt{q5b\_conformance.py}) yields 13 events, flattened below per object type.
 
 \subsubsection*{Flattened traces}
 

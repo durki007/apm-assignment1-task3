@@ -1,12 +1,12 @@
 """
 Flatten the OCEL to two object types and discover Petri nets (subtasks d-iv, d-v).
 
-Run:  poetry run python -m olympic_transport.flatten_discover
+Run:  poetry run python -m apm_assignment.part1.flatten_discover
       # or:  poetry run discover
 """
 import pm4py
 
-from olympic_transport.config import DATA_DIR, MODELS_DIR, FIGURES_DIR, OT_OA, OT_SYNC
+from apm_assignment.part1.config import DATA_DIR, MODELS_DIR, FIGURES_DIR, OT_OA, OT_SYNC
 
 
 def _process(ocel, object_type: str, name: str):

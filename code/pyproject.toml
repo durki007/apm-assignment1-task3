@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "olympic-transport-ocel"
+name = "apm-assignment"
 version = "0.1.0"
-description = "APM Assignment Part I, Q3 — object-centric event data simulation (public transport)."
+description = "Advanced Process Mining assignment — Part I (olympic transport OCEL simulation) and Part II (GSLPN, OCPQ-equivalent Python checks)."
 authors = ["Group <GroupID>"]
 readme = "README.md"
-packages = [{ include = "olympic_transport" }]
+packages = [{ include = "apm_assignment" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -20,15 +20,15 @@ jupyter = "*"
 ipykernel = "*"
 
 [tool.poetry.scripts]
-generate = "olympic_transport.generate_log:main"
-validate = "olympic_transport.validate:main"
-discover = "olympic_transport.flatten_discover:main"
-ocpn = "olympic_transport.discover_ocpn:main"
-dotted = "olympic_transport.dotted_chart:main"
-queries = "olympic_transport.queries:main"
-q3 = "olympic_transport.q3_gslpn:main"
-q5a = "olympic_transport.q5a_constraints:main"
-q5b = "olympic_transport.q5b_conformance:main"
+generate = "apm_assignment.part1.generate_log:main"
+validate = "apm_assignment.part1.validate:main"
+discover = "apm_assignment.part1.flatten_discover:main"
+ocpn = "apm_assignment.part1.discover_ocpn:main"
+dotted = "apm_assignment.part1.dotted_chart:main"
+queries = "apm_assignment.part1.queries:main"
+q3 = "apm_assignment.part2.q3_gslpn:main"
+q5a = "apm_assignment.part2.q5a_constraints:main"
+q5b = "apm_assignment.part2.q5b_conformance:main"
 
 [build-system]
 requires = ["poetry-core"]

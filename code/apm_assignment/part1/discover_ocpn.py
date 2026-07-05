@@ -1,12 +1,12 @@
 """
 Discover the object-centric Petri net N2 (subtask e).
 
-Run:  poetry run python -m olympic_transport.discover_ocpn
+Run:  poetry run python -m apm_assignment.part1.discover_ocpn
       # or:  poetry run ocpn
 """
 import pm4py
 
-from olympic_transport.config import DATA_DIR, MODELS_DIR, FIGURES_DIR
+from apm_assignment.part1.config import DATA_DIR, MODELS_DIR, FIGURES_DIR
 
 
 def main():

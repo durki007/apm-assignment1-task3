@@ -1,14 +1,14 @@
 """
 Validate the OCEL 2.0 log against assignment requirements R(i)–R(v) (subtasks d-ii, d-iii).
 
-Run:  poetry run python -m olympic_transport.validate
+Run:  poetry run python -m apm_assignment.part1.validate
       # or:  poetry run validate
 """
 import sys
 import pandas as pd
 import pm4py
 
-from olympic_transport.config import DATA_DIR
+from apm_assignment.part1.config import DATA_DIR
 
 
 def _load():

@@ -3,7 +3,7 @@ Q5a: Check constraints C1, C2, C3 on the version-control OCEL log.
 
 Replaces OCPQ queries with equivalent Python logic.
 
-Run:  poetry run python -m olympic_transport.q5a_constraints
+Run:  poetry run python -m apm_assignment.part2.q5a_constraints
       # or:  poetry run q5a
 
 Constraints:
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from olympic_transport.config import DATA_DIR
+from apm_assignment.paths import DATA_DIR
 
 DB_PATH = DATA_DIR / "version_control.sqlite"
 

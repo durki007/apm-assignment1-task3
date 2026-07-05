@@ -1,7 +1,7 @@
 """
 Build and export the OCEL 2.0 log using r4pm (subtask d, d-i).
 
-Run:  poetry run python -m olympic_transport.generate_log
+Run:  poetry run python -m apm_assignment.part1.generate_log
       # or:  poetry run generate
 """
 import random
@@ -11,7 +11,7 @@ import r4pm
 import r4pm.bindings as b
 from r4pm.bindings.bindings.slim_ocel_bindings import OCELTypeAttribute
 
-from olympic_transport.config import (
+from apm_assignment.part1.config import (
     DATA_DIR, SEED,
     OBJECT_TYPES, EVENT_TYPES,
     FARE_CLASSES, CROSSOVER_PROB, OA_NAME,

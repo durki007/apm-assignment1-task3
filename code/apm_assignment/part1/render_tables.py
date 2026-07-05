@@ -1,9 +1,9 @@
 """
 Emit E2O and O2O relation tables as Markdown (subtask b).
 
-Run:  poetry run python -m olympic_transport.render_tables
+Run:  poetry run python -m apm_assignment.part1.render_tables
 """
-from olympic_transport.config import OBJECT_TYPES, EVENT_TYPES, E2O_SPEC, O2O_SPEC
+from apm_assignment.part1.config import OBJECT_TYPES, EVENT_TYPES, E2O_SPEC, O2O_SPEC
 
 
 def render_e2o() -> str:

@@ -1,7 +1,7 @@
 """
 Q5b: Flattening-based conformance checking of L^Cameron_1 against OCPN N1.
 
-Run:  poetry run python -m olympic_transport.q5b_conformance
+Run:  poetry run python -m apm_assignment.part2.q5b_conformance
       # or:  poetry run q5b
 
 Steps:
@@ -35,11 +35,10 @@ from pm4py.objects.petri_net.obj import PetriNet, Marking
 from pm4py.objects.petri_net.utils import align_utils, petri_utils
 from pm4py.statistics.start_activities.log.get import get_start_activities
 
-from olympic_transport.config import DATA_DIR, ROOT_DIR
+from apm_assignment.paths import DATA_DIR, FIGURES2_DIR
 
 DB_PATH = DATA_DIR / "version_control.sqlite"
 CAMERON = "Cameron"
-FIGURES2_DIR = ROOT_DIR / "report2" / "figures"
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────

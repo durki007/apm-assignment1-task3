@@ -1,7 +1,7 @@
 """
 Q3: Trace-probability computation for the GSLPN on p.6 of the assignment PDF.
 
-Run:  poetry run python -m olympic_transport.q3_gslpn
+Run:  poetry run python -m apm_assignment.part2.q3_gslpn
       # or:  poetry run q3
 
 The net (places p0..p10, transitions t0..t11) is entered by hand below from
@@ -38,9 +38,7 @@ from typing import Dict, FrozenSet, List, Optional, Tuple
 
 import graphviz
 
-from olympic_transport.config import ROOT_DIR
-
-FIGURES2_DIR = ROOT_DIR / "report2" / "figures"
+from apm_assignment.paths import FIGURES2_DIR
 
 Marking = FrozenSet[str]
 State = Tuple[Marking, int]  # (marking, number of SIGMA letters matched so far)
