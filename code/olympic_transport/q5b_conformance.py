@@ -22,11 +22,18 @@ Items that still need manual work in the report:
   - C1/C2 interpretation paragraphs.
 """
 
+import graphviz
 import pandas as pd
 import pm4py
+from pm4py.algo.evaluation.precision import utils as precision_utils
+from pm4py.algo.evaluation.precision.variants.align_etconformance import (
+    align_fake_log_stop_marking,
+    transform_markings_from_sync_to_original_net,
+)
 from pm4py.objects.ocel.obj import OCEL
 from pm4py.objects.petri_net.obj import PetriNet, Marking
-from pm4py.objects.petri_net.utils import petri_utils
+from pm4py.objects.petri_net.utils import align_utils, petri_utils
+from pm4py.statistics.start_activities.log.get import get_start_activities
 
 from olympic_transport.config import DATA_DIR, ROOT_DIR
 
@@ -220,7 +227,42 @@ def run_token_replay(log, net, im, fm, label: str) -> float:
     return avg
 
 
-# ── Step 8: precision ─────────────────────────────────────────────────────────
+# ── Step 8: alignments ────────────────────────────────────────────────────────
+
+
+def _format_alignment(alignment) -> str:
+    """Render an alignment (list of (log_move, model_move) pairs) as a compact string."""
+    parts = []
+    for log_mv, model_mv in alignment:
+        if log_mv != ">>" and model_mv not in (None, ">>"):
+            parts.append(log_mv)                     # sync move
+        elif log_mv == ">>" and model_mv is None:
+            parts.append("tau")                        # silent model-only move
+        elif log_mv == ">>":
+            parts.append(f"(model:{model_mv})")       # visible model-only move
+        else:
+            parts.append(f"(log:{log_mv})")           # log-only move -- deviation
+    return " ".join(parts)
+
+
+def run_alignments(log, net, im, fm, label: str) -> float:
+    """Compute and print an optimal alignment per trace. Returns average alignment fitness."""
+    diags = pm4py.conformance_diagnostics_alignments(log, net, im, fm)
+
+    print(f"\n  Alignments -- {label}")
+    fitnesses = []
+    for trace, d in zip(log, diags):
+        case_id = trace.attributes.get("concept:name", "?")
+        fitness = d["fitness"]
+        fitnesses.append(fitness)
+        print(f"    {case_id}: fitness={fitness:.4f} cost={d['cost']}")
+        print(f"      {_format_alignment(d['alignment'])}")
+    avg = sum(fitnesses) / len(fitnesses) if fitnesses else 0.0
+    print(f"    AVERAGE alignment-based fitness: {avg:.4f}")
+    return avg
+
+
+# ── Step 9: precision ─────────────────────────────────────────────────────────
 
 
 def run_precision(log, net, im, fm, label: str) -> float:
@@ -239,6 +281,89 @@ def run_precision(log, net, im, fm, label: str) -> float:
         except Exception as e2:
             print(f"  [token precision also failed: {e2}]")
             return float("nan")
+
+
+# ── Step 10: prefix automaton (escaping edges behind align-based precision) ───
+#
+# Reconstructs the same prefix automaton that pm4py's align-based precision
+# (Adriansyah et al.) builds internally: one node per log prefix, with the set
+# of activities the log continues with (log_next) compared to the set the
+# model would allow from the marking reached by that prefix (model_next).
+# model_next - log_next are the escaping edges that reduce precision.
+
+def build_prefix_automaton(log, net, im, fm):
+    """Return a list of (prefix, log_next, model_next, escaping) rows, starting
+    with the empty prefix "<>"."""
+    rows = []
+
+    start_acts = set(get_start_activities(log))
+    ini_model_acts = {
+        t.label
+        for t in align_utils.get_visible_transitions_eventually_enabled_by_marking(net, im)
+        if t.label is not None
+    }
+    rows.append(("<>", start_acts, ini_model_acts, ini_model_acts - start_acts))
+
+    prefixes, _ = precision_utils.get_log_prefixes(log)
+    prefixes_keys = list(prefixes.keys())
+    fake_log = precision_utils.form_fake_log(prefixes_keys)
+
+    align_stop_marking = align_fake_log_stop_marking(fake_log, net, im, fm)
+    all_markings = transform_markings_from_sync_to_original_net(align_stop_marking, net)
+
+    for i, prefix_key in enumerate(prefixes_keys):
+        markings = all_markings[i]
+        log_next = prefixes[prefix_key]
+        if markings is None:
+            rows.append((prefix_key, log_next, None, None))
+            continue
+        model_next = set()
+        for m in markings:
+            model_next |= {
+                t.label
+                for t in align_utils.get_visible_transitions_eventually_enabled_by_marking(net, m)
+                if t.label is not None
+            }
+        rows.append((prefix_key, log_next, model_next, model_next - log_next))
+
+    return rows
+
+
+def print_prefix_automaton(rows, label: str) -> None:
+    print(f"\n  Prefix automaton (log continuations vs. model continuations) -- {label}")
+    for prefix, log_next, model_next, escaping in rows:
+        if model_next is None:
+            print(f"    {prefix:<30} UNFIT -- no reachable model marking for this prefix")
+            continue
+        esc = f"  ESCAPING={sorted(escaping)}" if escaping else ""
+        print(f"    {prefix:<30} log->{sorted(log_next)}  model->{sorted(model_next)}{esc}")
+
+
+def save_prefix_automaton_figure(rows, name: str) -> str:
+    """Render the prefix automaton as a trie: solid edges were observed in the
+    log; dashed red edges are escaping edges (allowed by the model, never
+    observed in the log -- the source of imprecision)."""
+    dot = graphviz.Digraph(name, format="png")
+    dot.attr(rankdir="LR")
+    dot.node("root", shape="circle", label="")
+
+    for prefix, log_next, model_next, escaping in rows:
+        if model_next is None:
+            continue
+        node = "root" if prefix == "<>" else prefix
+        for act in sorted(log_next):
+            child = act if prefix == "<>" else f"{prefix},{act}"
+            dot.node(child, shape="circle", label="")
+            dot.edge(node, child, label=act)
+        for act in sorted(escaping):
+            trap = f"{prefix}__ESC__{act}"
+            dot.node(trap, shape="point", width="0.08")
+            dot.edge(node, trap, label=act, style="dashed", color="red", fontcolor="red")
+
+    FIGURES2_DIR.mkdir(parents=True, exist_ok=True)
+    out_base = str(FIGURES2_DIR / name)
+    dot.render(out_base, cleanup=True)
+    return out_base + ".png"
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -285,12 +410,29 @@ def main() -> None:
     avg_fitness = (avg_fit_b + avg_fit_u) / 2
     print(f"\n  AVERAGE FITNESS (both subnets): {avg_fitness:.4f}")
 
+    # Alignments (per-trace optimal alignment; also underlies precision below)
+    print("\n" + "-" * 60)
+    run_alignments(log_branches, net_b, im_b, fm_b, "branches subnet")
+    run_alignments(log_users, net_u, im_u, fm_u, "users subnet")
+
     # Precision
     print("\n" + "-" * 60)
     prec_b = run_precision(log_branches, net_b, im_b, fm_b, "branches subnet")
     prec_u = run_precision(log_users, net_u, im_u, fm_u, "users subnet")
     avg_prec = (prec_b + prec_u) / 2
     print(f"\n  AVERAGE PRECISION (both subnets): {avg_prec:.4f}")
+
+    # Prefix automata (escaping edges underlying the precision numbers above)
+    print("\n" + "-" * 60)
+    rows_b = build_prefix_automaton(log_branches, net_b, im_b, fm_b)
+    print_prefix_automaton(rows_b, "branches subnet")
+    png_pa_b = save_prefix_automaton_figure(rows_b, "prefix_automaton_branches")
+    print(f"  Saved prefix automaton figure -> {png_pa_b}")
+
+    rows_u = build_prefix_automaton(log_users, net_u, im_u, fm_u)
+    print_prefix_automaton(rows_u, "users subnet")
+    png_pa_u = save_prefix_automaton_figure(rows_u, "prefix_automaton_users")
+    print(f"  Saved prefix automaton figure -> {png_pa_u}")
 
     # Summary
     print("\n" + sep)

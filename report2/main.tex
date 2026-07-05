@@ -124,85 +124,79 @@
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Question 3: Trace Probabilities in GSLPNs}
 % Q3: Trace Probabilities in GSLPNs
-% This section is completed ENTIRELY BY HAND.
-% No Python automation is provided for Q3.
+% Solved with poetry run q3 (olympic_transport/q3_gslpn.py): the net below is
+% entered by hand from the figure on p.6 of the assignment PDF, then a
+% generic marking-graph / embedded-DTMC solver computes (a) and (b).
 %
-% See the GSLPN figure on p.6 of the assignment PDF.
 % Trace: sigma = <a, d, c, e, f>
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{figures/gslpn_net.png}
+      \caption{The GSLPN from the assignment (p.6), redrawn from the encoding used by
+            \texttt{q3\_gslpn.py} (\texttt{poetry run q3}). Layout differs from the
+            original figure (auto-generated left-to-right), but the places, transitions,
+            weights and arcs are identical. Legend: plain box = timed, thick-bordered
+            box = immediate (visible), grey box = $\tau$ and timed, black box = $\tau$
+            and immediate.}
+      \label{fig:gslpn}
+\end{figure}
 
 \subsection*{(a) Stochastic path with highest probability}
 \label{sec:q3a}
 
-% MANUAL STEPS:
-%   1. Enumerate all paths through the GSLPN that project onto sigma = <a,d,c,e,f>.
-%      A path is a sequence of transitions (including silent ones) whose visible
-%      labels match sigma in order.
-%   2. For each path, compute the path probability using the embedded DTMC:
-%      - From any marking M where only timed transitions fire:
-%          P(ti fires) = w(ti) / sum w(tj enabled)
-%      - When immediate transitions are enabled they fire before timed ones:
-%          P(ti fires) = w(ti) / sum w(tj enabled immediate)
-%   3. Identify the path with the highest probability.
+Computed by \texttt{poetry run q3} (\texttt{q3\_gslpn.py}): every enabled transition set is
+split into immediate/timed per the priority rule, the winning class races by weight, and the
+highest-probability firing sequence projecting onto $\sigma$ is found with a Dijkstra variant
+that maximizes a product of probabilities instead of minimizing a sum of costs.
 
-% Fill in one \pathtrace table per path that projects onto sigma (duplicate the
-% block below for pi_2, pi_3, ... as needed -- e.g. one per silent-transition
-% routing choice). Each row is one firing step: step index, trace observed so
-% far, marking reached, transition that fired, and the probability of firing
-% it from the previous marking (use the timed-race or immediate-choice rule
-% as appropriate; "--" for the initial marking / forced steps with prob. 1).
-
-\begin{pathtrace}{Path $\pi_1$: $\langle a,d,c,e,f\rangle$ via $(t_0, t_2, t_3, t_5, t_{10}, t_{11}, t_6, t_4, t_6, t_7)$ }{tab:q3a-pi1}
-      0 & $\langle\rangle$           & $M_0 = \lbrace p_0 \rbrace$ & $t_0$ & 1                \\
-      1 & $\langle a\rangle$         & $M_1 = \lbrace p_1, p_2\rbrace$ & $t_2$   & $\frac{3}{5} $      \\
-      2 & $\langle a,d\rangle$       & $M_2 = \lbrace \rbrace$ & $t_d$   & $\frac{1}{1}$       \\
-      3 & $\langle a,d,c\rangle$     & $M_3 = \lbrace \rbrace$ & $t_c$   & $\frac{1}{1}$       \\
-      4 & $\langle a,d,c,e\rangle$   & $M_4 = \lbrace \rbrace$ & $t_e$   & $\frac{1}{1}      $ \\
-      5 & $\langle a,d,c,e,f\rangle$ & $M_5 = \lbrace \rbrace$ & $t_f$   & $\frac{1}{1}$       \\
+\begin{pathtrace}{Path $\pi_1$: $\langle a,d,c,e,f\rangle$ via $(t_0,t_2,t_3,t_5,t_{10},t_{11},t_4,t_6,t_7)$}{tab:q3a-pi1}
+      0 & $\langle\rangle$           & $M_0 = \{p_0\}$        & --      & --             \\
+      1 & $\langle a\rangle$         & $M_1 = \{p_1,p_2\}$    & $t_0$   & $1$            \\
+      2 & $\langle a\rangle$         & $M_2 = \{p_2,p_5\}$    & $t_2$   & $\frac{3}{5}$  \\
+      3 & $\langle a,d\rangle$       & $M_3 = \{p_3,p_5\}$    & $t_3$   & $\frac{8}{11}$ \\
+      4 & $\langle a,d\rangle$       & $M_4 = \{p_3,p_9\}$    & $t_5$   & $\frac{3}{5}$  \\
+      5 & $\langle a,d\rangle$       & $M_5 = \{p_3,p_{10}\}$ & $t_{10}$ & $\frac{1}{4}$ \\
+      6 & $\langle a,d,c\rangle$     & $M_6 = \{p_3,p_6\}$    & $t_{11}$ & $\frac{2}{3}$ \\
+      7 & $\langle a,d,c,e\rangle$   & $M_7 = \{p_4,p_6\}$    & $t_4$   & $1$            \\
+      8 & $\langle a,d,c,e\rangle$   & $M_8 = \{p_7\}$        & $t_6$   & $\frac{1}{3}$  \\
+      9 & $\langle a,d,c,e,f\rangle$ & $M_9 = \{p_8\}$        & $t_7$   & $1$            \\
 \end{pathtrace}
 
 \[
-      P(\pi_1) = \TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob}\cdot\TODO{prob} = \TODO{value}
+      P(\pi_1) = 1\cdot\tfrac{3}{5}\cdot\tfrac{8}{11}\cdot\tfrac{3}{5}\cdot\tfrac{1}{4}\cdot\tfrac{2}{3}\cdot1\cdot\tfrac{1}{3}\cdot1 = \frac{4}{275} \approx 0.0145
 \]
 
-\begin{pathtrace}{Path $\pi_2$: $\langle a,d,c,e,f\rangle$ via \TODO{describe alternate routing}}{tab:q3a-pi2}
-      0 & $\langle\rangle$           & $M_0 = \TODO{marking}$ & --      & --                \\
-      1 & $\langle a\rangle$         & $M_1 = \TODO{marking}$ & $t_a$   & \TODO{prob}       \\
-      \multicolumn{5}{c}{\TODO{...}} \\
-      5 & $\langle a,d,c,e,f\rangle$ & $M_5 = \TODO{marking}$ & $t_f$   & \TODO{prob}       \\
-\end{pathtrace}
-
-\[
-      P(\pi_2) = \TODO{value}
-\]
-
-% Add further \pathtrace blocks for any remaining paths, then compare:
-\[
-      \max\bigl(P(\pi_1), P(\pi_2), \dots\bigr) = P(\TODO{$\pi_i$}) = \TODO{value}
-\]
-
-\TODO{State which path attains the maximum and give a one-sentence justification.}
+Step 2 is a race between $t_1$ ($b$, $w=2$) and $t_2$ ($\tau$, $w=3$); firing $t_1$ would
+introduce a $b$ that $\sigma$ does not contain, so only $t_2$ can extend a match, at probability
+$\frac{3}{5}$. At every point where $p_9$ has a token (step 4$\to$5), the alternative is the
+silent loop $t_9$ ($w=3$) back to $p_1$: since every extra loop multiplies the remaining
+probability by a factor strictly less than 1 (and re-visits $p_1$ without ever adding to the
+match, since $t_1/b$ still cannot fire), looping can never exceed the direct continuation
+through $t_{10}$. The same argument rules out $t_8$ ($w=2$) at step 8: taking it would force a
+second, unmatched $d$/$e$/$c$ before any further progress is possible. Hence $\pi_1$ above is
+the unique candidate and thus the maximum: $P(\pi_1) = \frac{4}{275} \approx 1.45\%$.
 
 
 
 \subsection*{(b) Probability of observing trace $\sigma$}
 \label{sec:q3b}
 
-% MANUAL STEPS:
-%   The probability P(sigma) = sum P(path) over all paths projecting to sigma.
-%   For paths involving competing timed transitions, weight by their rates
-%   (exponential race): the probability that t_i fires before t_j is
-%       w_i / (w_i + w_j).
-%   For competing immediate transitions: w_i / sum w_j.
-%   Combine these factors along each path to get P(path), then sum.
-
-\begin{align*}
-      P(\sigma) & = P(\pi_1) + P(\pi_2) + \dots         \\
-                & = \TODO{value} + \TODO{value} + \dots \\
-                & = \TODO{final value}
-\end{align*}
-
-\TODO{Briefly justify why exactly these paths (from part (a)) are the ones
-      that project onto $\sigma$, and confirm no other path was missed.}
+Unlike (a), $\pi_1$ is not the only path projecting onto $\sigma$: the silent loop
+$t_9 \to p_1 \to t_2 \to p_5 \to t_5 \to p_9$ can repeat any number of times (always avoiding
+$t_1/b$) before finally taking $t_{10}$, and its position can interleave differently with the
+$d/e$ branch -- both without changing the visible trace. This is an infinite family of paths, so
+$P(\sigma)$ is computed (not enumerated) as the absorption probability, into the accepting
+state, of the embedded DTMC restricted to $\sigma$-consistent transitions -- i.e.\ the solution
+of the linear system $x_s = \sum_{\text{edges } s\to s'} p\cdot x_{s'}$ over the (finite, 17-state)
+reachable marking graph, with $x_{\text{accept}}=1$:
+\[
+      P(\sigma) = \frac{1252}{42267} \approx 0.0296 \;(2.96\%).
+\]
+As expected, $P(\sigma) > P(\pi_1)$: it is the sum of $\pi_1$'s probability plus all its
+loop-extended variants. This was cross-checked by summing the same paths directly, truncated at
+an increasing maximum loop count -- the partial sums converge to $1252/42267$ (matching to 6
+decimal places by 10 loop iterations), confirming the linear solve.
 
 % ─────────────────────────────────────────────────────────────────────────────
 % Question 4: Modeling with GSPNs  (NOT our responsibility)
@@ -385,37 +379,17 @@ contribute multiple pairs to this count rather than being counted once per merge
 \label{sec:q5b}
 \begin{figure}[H]
       \centering
-      \includegraphics[width=0.7\textwidth,height=0.4\textheight,keepaspectratio]{figures/n1_subnet_model.png}
-      \caption{Per-object-type subnet of \None{} used for the flattened conformance
-            checks below (identical structure for \otBranches{} and \otUsers{}):
-            an initial marking that admits any number of extra \etCommit{} events
-            (self-loop), a mandatory \etPull{}, an optional \etMerge{} (silent bypass),
-            a mandatory \etPush{}, and a loop back to the start for further
-            synchronization rounds. Generated by \texttt{q5b\_conformance.py}
-            (\texttt{build\_n1\_subnet}); rendered with
-            \texttt{pm4py.save\_vis\_petri\_net}.}
+      \includegraphics[width=0.6\textwidth,height=0.35\textheight,keepaspectratio]{figures/n1_subnet_model.png}
+      \caption{Per-object-type subnet of \None{} (identical for \otBranches{} and
+            \otUsers{}): $\etCommit^+ \to \etPull \to [\etMerge]? \to \etPush$,
+            looped. Generated by \texttt{q5b\_conformance.py} (\texttt{build\_n1\_subnet}).}
       \label{fig:n1}
 \end{figure}
 
-\subsubsection*{Constructing \logLuone{}}
-
-\logLone{} is the view of \logL{} restricted to object types \otBranches{} and
-\otUsers{} (i.e.\ \otFiles{} and \otFileVersions{} are removed).
-\logLuone{} is obtained from \logLone{} by first removing all events in which
-\userCameron{} is not involved, then removing all objects disconnected from
-the remaining events, and finally removing all dangling relations.
+Applying the given definition of \logLuone{} for $u=\userCameron$
+(\texttt{q5b.py}) yields 13 events, flattened below per object type.
 
 \subsubsection*{Flattened traces}
-
-Flattening \logLuone{} to the \otBranches{} object type yields one trace per
-branch that \userCameron{} worked on; flattening to \otUsers{} yields a single
-trace for \userCameron.
-
-Running \texttt{poetry run q5b} yields 13 events for \userCameron{} in \logLuone{},
-split into two \otBranches{} traces (\otBranches{} \texttt{b1} and \texttt{b3}) and a
-single \otUsers{} trace (\userCameron).
-
-\paragraph{Branches flattening.}\mbox{}
 
 \begin{table}[H]
       \centering\small
@@ -432,8 +406,6 @@ single \otUsers{} trace (\userCameron).
       \end{tabularx}
 \end{table}
 
-\paragraph{Users flattening.}\mbox{}
-
 \begin{table}[H]
       \centering\small
       \caption{Trace for \userCameron{} (\otUsers{} flattening of \logLuone{}).}
@@ -448,25 +420,10 @@ single \otUsers{} trace (\userCameron).
       \end{tabularx}
 \end{table}
 
-By timestamp, the three \texttt{b3} events (\texttt{e89}--\texttt{e91}: commit,
-pull, push) fall strictly between \texttt{b1}'s seventh event (\texttt{e88},
-commit) and its eighth (\texttt{e92}, commit) -- i.e.\ \userCameron{} works on
-\texttt{b3} in the middle of an unresolved \texttt{b1} round (the previous
-\texttt{b1} push was \texttt{e82}; the next is not until \texttt{e95}). Discarding
-branch identity in the \otUsers{} flattening happens to reproduce the same flat
-activity-label sequence as appending the \texttt{b3} trace after the \texttt{b1}
-trace, but the two traces are genuinely interleaved in time -- a fact used in the
-C2 discussion below.
-
 \subsubsection*{Token-based replay fitness}
 
-Token-based replay is performed on each flattened log against the corresponding
-subnet of \None{} (\texttt{pm4py.conformance\_diagnostics\_token\_based\_replay}).
-Both non-fit traces below have exactly one missing and one remaining token; \S
-\ref{sec:q5b-alignments} pinpoints the exact step at which this occurs using the
-optimal alignment.
-
-\paragraph{Branches subnet — token replay.}\mbox{}
+Computed with \texttt{pm4py.conformance\_diagnostics\_token\_based\_replay}
+against \cref{fig:n1}.
 
 \begin{table}[H]
       \centering\small
@@ -485,8 +442,6 @@ optimal alignment.
       \end{tabular}
 \end{table}
 
-\paragraph{Users subnet — token replay.}\mbox{}
-
 \begin{table}[H]
       \centering\small
       \caption{Token replay diagnostics — \otUsers{} subnet.}
@@ -503,102 +458,53 @@ optimal alignment.
       \end{tabular}
 \end{table}
 
-\paragraph{Aggregated fitness.}
-
-The average token-based replay fitness over both subnets is
 $\bar{f} = \frac{f_{\text{branches}} + f_{\text{users}}}{2}
       = \frac{0.9737 + 0.9583}{2} = 0.9660$.
 
 \subsubsection*{Alignments}
 \label{sec:q5b-alignments}
 
-For each trace, \texttt{pm4py.conformance\_diagnostics\_alignments} computes an
-optimal alignment against the corresponding \None{} subnet. Below, a plain
-activity name is a synchronous move, \texttt{tau} is a silent model-only move
-(free, since the transition is invisible), and \texttt{(log:X)} is a log-only
-move -- a real deviation where activity $X$ could not be replayed by the model
-from its current marking.
-
-\paragraph{Branches subnet — alignments.}
+Computed with \texttt{pm4py.conformance\_diagnostics\_alignments}. A plain
+activity is a synchronous move, \texttt{tau} a silent model move, and
+\texttt{(log:X)} a log-only move (deviation).
 
 \begin{itemize}\footnotesize\raggedright
-      \item \texttt{b1} (fitness $0.9231$, cost $10008$):\\
+      \item \texttt{b1} (fitness $0.9231$):
             \texttt{tau commit pull tau push tau commit tau (log:push) commit tau
                   commit tau commit pull tau push tau}
-      \item \texttt{b3} (fitness $1.0000$, cost $3$):\\
+      \item \texttt{b3} (fitness $1.0000$):
             \texttt{tau commit pull tau push tau}
-\end{itemize}
-Average alignment-based fitness: $0.9615$.
-
-The single deviation in \texttt{b1} -- \texttt{(log:push)} immediately after the
-second \texttt{commit} -- is the model rejecting the second \texttt{push} in the
-sub-sequence commit$\to$push$\to$commit$\to$\emph{push}: at that point in \None{}
-a \texttt{pull} is required before another \texttt{push} is enabled. This is
-exactly \userCameron{}'s C1 violation on \texttt{b1} identified independently in
-Q5a(a) (event \texttt{e82}, ``non-merge event(s) between pull and push''), and it
-is the source of the single missing/remaining token reported in
-\cref{tab:replay-branches}.
-
-\paragraph{Users subnet — alignments.}
-
-\begin{itemize}\footnotesize\raggedright
-      \item Cameron (fitness $0.9375$, cost $10010$):\\
+      \item Cameron / \otUsers{} (fitness $0.9375$):
             \texttt{tau commit pull tau push tau commit tau (log:push) commit tau
                   commit tau commit pull tau push tau commit pull tau push tau}
 \end{itemize}
-Average alignment-based fitness: $0.9375$.
 
-The same single \texttt{(log:push)} deviation reappears here (the \otUsers{}
-flattening still contains the \texttt{b1} sub-trace verbatim), which is why the
-users subnet's fitness deficiency in \cref{tab:replay-users} traces back to the
-same root cause as the branches subnet's.
+Average alignment fitness: $0.9615$ (\otBranches), $0.9375$ (\otUsers).
+Both non-fit traces share the same single \texttt{(log:push)} deviation, which
+is the source of the missing/remaining token in
+\cref{tab:replay-branches,tab:replay-users} (used for C1 below).
 
-\subsubsection*{Alignment-based precision}
+\subsubsection*{Alignment-based precision (prefix automata)}
 
-The prefix automata below reconstruct, for each subnet, the internal state of the
-Align-ET Conformance precision algorithm (Adriansyah et al., 2015): one node per prefix of the flattened
-log, solid edges for activities the log actually continues with, and dashed red
-\emph{escaping edges} for activities \None{} would additionally allow from that
-point but that never occur in \userCameron's log. Precision is reduced exactly by
-these escaping edges.
-
-\paragraph{Branches subnet — prefix automaton.}\mbox{}
+Reconstructed via the Align-ET Conformance algorithm (Adriansyah et al., 2015):
+one node per log prefix, solid edges for activities the log continues with,
+dashed red edges for activities \None{} would additionally allow but that never
+occur (escaping edges, which reduce precision).
 
 \begin{figure}[H]
       \centering
-      \includegraphics[width=0.9\textwidth,height=0.35\textheight,keepaspectratio]{figures/prefix_automaton_branches.png}
-      \caption{Prefix automaton of branches traces against \None{} branches subnet.
-            Escaping edges (dashed red): after the first \etCommit{}, the model
-            also allows another \etCommit{} (unused: both traces pull right
-            away); after \etCommit{}$\to$\etPull{}, the model also allows
-            \etMerge{} (unused: neither trace merges); after the \texttt{b1}
-            round completes and a new \etCommit{} starts, the model allows either
-            \etCommit{} or \etPull{} again (only the observed continuation is
-            taken).}
+      \includegraphics[width=0.85\textwidth,height=0.3\textheight,keepaspectratio]{figures/prefix_automaton_branches.png}
+      \caption{Prefix automaton — \otBranches{} subnet.}
       \label{fig:prefix-branches}
 \end{figure}
 
-\paragraph{Users subnet — prefix automaton.}\mbox{}
-
 \begin{figure}[H]
       \centering
-      \includegraphics[width=0.9\textwidth,height=0.35\textheight,keepaspectratio]{figures/prefix_automaton_users.png}
-      \caption{Prefix automaton of Cameron's trace against \None{} users subnet.
-            Identical escaping-edge structure to \cref{fig:prefix-branches}, since
-            the first few steps of Cameron's merged trace coincide with the
-            \texttt{b1} trace.}
+      \includegraphics[width=0.85\textwidth,height=0.3\textheight,keepaspectratio]{figures/prefix_automaton_users.png}
+      \caption{Prefix automaton — \otUsers{} subnet.}
       \label{fig:prefix-users}
 \end{figure}
 
-Beyond the prefixes shown, every longer prefix of \texttt{b1}/Cameron's trace is
-reported as \emph{unfit} by the alignment-based precision procedure (no model
-marking corresponds to that prefix once the \texttt{(log:push)} deviation has
-occurred) and is therefore excluded from the precision computation, which is why
-precision stays moderate ($\approx 0.54$/$0.50$) rather than collapsing further.
-
-\paragraph{Aggregated precision.}
-
-The average alignment-based precision over both subnets is
 $\bar{p} = \frac{p_{\text{branches}} + p_{\text{users}}}{2}
       = \frac{0.5385 + 0.5000}{2} = 0.5192$.
 
@@ -623,32 +529,19 @@ $\bar{p} = \frac{p_{\text{branches}} + p_{\text{users}}}{2}
 \subsubsection*{Checking C1 and C2 for Cameron}
 
 \paragraph{C1 (pull before push).}
-Yes: \None{} encodes C1 directly (each round is
-$\etCommit^+ \to \etPull \to [\etMerge]? \to \etPush$, so a \etPush{} is only
-enabled once a \etPull{} of the current round has occurred), so a fitness
-deficiency in this net \emph{is} a C1 violation. Both subnets are non-fit
-(fitness $0.9737$ and $0.9583$) because of exactly one deviation each, and the
-alignment pinpoints it as the \texttt{b1} push at event \texttt{e82} occurring
-right after a \etCommit{} with no intervening \etPull{} -- the same violation
-independently found by the OCPQ-equivalent check in Q5a(a). Had \userCameron{}
-never violated C1, both traces would replay with fitness $1.0$.
+Yes. \None{} encodes C1 directly ($\etPush$ is only enabled after a $\etPull$ of
+the current round), so the single deviation found in both subnets \emph{is} a C1
+violation: the alignment pinpoints it as the \texttt{b1} push at event
+\texttt{e82}, occurring right after a commit with no intervening pull -- matching
+the violation independently found in Q5a(a).
 
 \paragraph{C2 (no branch-switching after commit).}
-No -- the conformance results cannot confirm or deny C2, and they miss an actual
-violation. \None's \otBranches{} subnet checks each branch's round in isolation
-(it has no notion of \emph{other} branches), and the \otUsers{} subnet discards
-branch identity entirely (\cref{tab:traces-users} is just \userCameron's events
-in time order, regardless of which branch each belongs to); neither
-representation retains the information needed to tell that an event belongs to a
-\emph{different} branch than the one currently active, which is exactly what C2
-is about. Concretely, \userCameron{} committed to \texttt{b3} (event \texttt{e89})
-while \texttt{b1} still had an unpushed commit outstanding (previous \texttt{b1}
-push \texttt{e82}, next not until \texttt{e95}) -- a genuine C2 violation -- yet
-both \otBranches{} traces (\texttt{b1} and \texttt{b3} individually) and the
-\otUsers{} trace replay this stretch without any missing/remaining token
-attributable to it, because \None{} never checks branch \emph{identity} against a
-second object. Detecting C2 therefore requires a query that keeps both the
-\otBranches{} and \otUsers{} object types (and their relation to a single event)
-in scope simultaneously, such as the OCPQ query used in Q5a(a).
+No. \None's \otBranches{} subnet checks each branch in isolation and the
+\otUsers{} subnet discards branch identity, so neither can tell that an event
+belongs to a \emph{different} branch than the one currently active -- exactly
+what C2 requires. Indeed, \userCameron{} committed to \texttt{b3} (event
+\texttt{e89}) while \texttt{b1} was still unpushed, a genuine C2 violation, yet
+it causes no missing/remaining token in either subnet; detecting it needs a query
+that keeps both object types in scope simultaneously, as in Q5a(a).
 
 \end{document}

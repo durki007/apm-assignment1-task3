@@ -109,7 +109,12 @@ Nothing downstream can run before `data/log.sqlite` exists.
 
 **Responsible for Q3, Q5a, Q5b only.** See `doc/apm26-assignment-part-2.pdf` for exact question text.
 
-- Q3 is done **entirely by hand** — no Python code. The LaTeX template is in `report2/sections/q3_manual.tex`.
+- Q3 uses **Python code instead of hand calculation**: the GSLPN (places/transitions/weights,
+  entered by hand from the figure on assignment PDF p.6) is solved generically as a product of
+  the marking graph with a "how much of sigma has been matched" counter — max-product Dijkstra
+  for part (a) (single highest-probability path), exact linear-system absorption probability for
+  part (b) (total P(sigma), needed because the silent t9-loop admits infinitely many matching
+  paths). Run `poetry run q3`.
 - Q5a and Q5b use **Python code instead of OCPQ queries**. Run `poetry run q5a` and `poetry run q5b`.
 - The Part 2 LaTeX report is in `report2/` (separate from Part 1's `report/`). Build with `latexmk -pdf main.tex` from `report2/`.
 
@@ -117,20 +122,23 @@ Nothing downstream can run before `data/log.sqlite` exists.
 
 | Script entry | Module | Purpose |
 |---|---|---|
+| `poetry run q3` | `q3_gslpn.py` | Solve GSLPN path (a) and trace (b) probabilities for sigma = <a,d,c,e,f> |
 | `poetry run q5a` | `q5a_constraints.py` | Check C1, C2, C3 on `version_control.sqlite` |
 | `poetry run q5b` | `q5b_conformance.py` | Filter to Cameron, flatten, token replay, precision |
 
 ### What still needs manual work (Part 2)
 
+Note: Part 2's report is a single `report2/main.tex` (no separate `sections/` files
+despite the module-per-question table above referencing script names).
+
 | Item | Location | Action needed |
 |---|---|---|
-| Q3 (a) and (b) | `report2/sections/q3_manual.tex` | Full hand calculation of GSLPN path probabilities |
-| N1 figure | `report2/figures/N1_ocpn.png` | Screenshot from assignment PDF p.9 |
-| Token replay tables | `report2/sections/q5b_conformance.tex` | Copy from `poetry run q5b` output |
-| Alignment tables | `report2/sections/q5b_conformance.tex` | Copy from `poetry run q5b` output |
-| Prefix automata figures | `report2/sections/q5b_conformance.tex` | Draw manually or export from ProM |
-| Interpretation paragraphs (C1/C2 in Q5b) | `report2/sections/q5b_conformance.tex` | Write based on fitness/precision values |
-| Q5a explanation paragraphs | `report2/sections/q5a_constraints.tex` | Paste script output; write 2–3 sentence interpretations |
+| Q3 (a) and (b) | `report2/main.tex` (`sec:q3a`, `sec:q3b`) | Copy `poetry run q3` output into the `\pathtrace` tables and probability values — still `\TODO` |
+
+Q5a is done (real OCPQ screenshots + explanations already in `report2/main.tex`).
+Q5b is done (N1 subnet figure, flattened traces, token-replay tables, alignments,
+prefix automata figures, and C1/C2 interpretation all filled in from
+`poetry run q5b` output — see `q5b_conformance.py`).
 
 ### Data for Part 2
 
